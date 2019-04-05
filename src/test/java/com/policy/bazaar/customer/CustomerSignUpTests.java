@@ -1,6 +1,8 @@
 package com.policy.bazaar.customer;
 
 import static org.junit.Assert.fail;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,7 @@ public class CustomerSignUpTests {
 			CustomerSignUpMock cusMock = new CustomerSignUpMock();
 			cusMock.setFirstname("Archit");
 			cusMock.setLastname("Bhadauria");
-			cusMock.setEmail("a@b.com");
+			cusMock.setEmail("a1@b.com");
 			cusMock.setMobile("9863876375");
 			cusMock.setPassword("Archit@123");
 			customers.add(cusMock);
@@ -43,13 +45,17 @@ public class CustomerSignUpTests {
 
 		try {
 
-			MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("customers/signup")
+			MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/customers/signup")
 					.content(toJsonString(customers)).contentType(MediaType.APPLICATION_JSON)
 					.accept(MediaType.APPLICATION_JSON);
 				
             
 			
-			mvc.perform(requestBuilder);
+			mvc.perform(requestBuilder.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data").value(null))
+			.andExpect(jsonPath("$.status").value(true))
+			.andExpect(jsonPath("$.message").value("Successfully Registered"));
 			//Add Comment
 
 		} catch (Exception e) {
