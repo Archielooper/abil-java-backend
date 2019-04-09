@@ -9,15 +9,15 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.policy.bazaar.Policy.Policies;
-import com.policy.bazaar.Policy.Purchasedpolicies;
-import com.policy.bazaar.Security.JwtToken;
 import com.policy.bazaar.encryption.AES256Encryption;
 import com.policy.bazaar.exceptions.NotFoundException;
 import com.policy.bazaar.globalresponse.GlobalResponse;
+import com.policy.bazaar.policy.Policies;
+import com.policy.bazaar.policy.Purchasedpolicies;
 import com.policy.bazaar.repository.CustomerRepository;
 import com.policy.bazaar.repository.PoliciesRepository;
 import com.policy.bazaar.repository.PurchasedPoliciesRepository;
+import com.policy.bazaar.security.JwtToken;
 
 @Service
 public class CustomerService {

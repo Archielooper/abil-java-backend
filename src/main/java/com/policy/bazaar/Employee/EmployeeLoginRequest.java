@@ -1,4 +1,4 @@
-package com.policy.bazaar.Employee;
+package com.policy.bazaar.employee;
 
 public class EmployeeLoginRequest {
           

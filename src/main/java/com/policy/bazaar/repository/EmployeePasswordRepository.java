@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.policy.bazaar.Employee.Employeepasswords;
+import com.policy.bazaar.employee.Employeepasswords;
 
 @Repository
 public interface EmployeePasswordRepository extends JpaRepository<Employeepasswords, Integer> 

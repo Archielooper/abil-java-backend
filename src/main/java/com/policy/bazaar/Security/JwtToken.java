@@ -1,4 +1,4 @@
-package com.policy.bazaar.Security;
+package com.policy.bazaar.security;
 
 import java.security.Key;
 import java.util.Date;

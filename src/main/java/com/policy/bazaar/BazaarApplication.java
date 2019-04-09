@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import com.policy.bazaar.Security.EmployeeAuthorizationFilter;
-import com.policy.bazaar.Security.JWTAuthorizationFilter;
+import com.policy.bazaar.security.EmployeeAuthorizationFilter;
+import com.policy.bazaar.security.JWTAuthorizationFilter;
 
 @SpringBootApplication
 public class BazaarApplication {

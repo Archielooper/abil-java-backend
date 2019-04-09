@@ -1,4 +1,4 @@
-package com.policy.bazaar.Security;
+package com.policy.bazaar.security;
 
 public class EmployeeJwtResponse {
 	

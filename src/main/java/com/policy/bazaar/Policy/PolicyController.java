@@ -1,11 +1,14 @@
-package com.policy.bazaar.Policy;
+package com.policy.bazaar.policy;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +33,19 @@ public class PolicyController {
 	public GlobalResponse getPolicies() {
 		return policyService.getPolicies();
 
+	}
+	
+	@PutMapping("/update/{pid}")
+	public GlobalResponse updatePolicy(@PathVariable Integer pid, @RequestBody UpdatePolicyRequest updatePolicyRequest) {
+		
+		return policyService.updatePolicy(pid, updatePolicyRequest);
+		
+	}
+	
+	@DeleteMapping("/delete/{pid}")
+	public GlobalResponse deletePolicy(@PathVariable Integer pid) {
+		
+		return policyService.deletePolicy(pid);
 	}
 
 }

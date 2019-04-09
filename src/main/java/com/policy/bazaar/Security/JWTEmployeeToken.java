@@ -1,4 +1,4 @@
-package com.policy.bazaar.Security;
+package com.policy.bazaar.security;
 
 import java.security.Key;
 import java.util.Date;
@@ -9,7 +9,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.policy.bazaar.Employee.Employees;
+import com.policy.bazaar.employee.Employees;
 
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;

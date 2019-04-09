@@ -1,4 +1,4 @@
-package com.policy.bazaar.Employee;
+package com.policy.bazaar.employee;
 
 import java.sql.Date;
 
@@ -15,90 +15,102 @@ import javax.validation.constraints.Size;
 
 @Entity
 public class Employees {
-	
+
 	@Id
-	  @SequenceGenerator(
-				name="employee_id_seq",
-				sequenceName="employee_id_seq",
-				allocationSize=1
-				)
-		@GeneratedValue(
-				strategy=GenerationType.AUTO,
-				generator="employee_id_seq"
-				)
+	@SequenceGenerator(name = "employee_id_seq", sequenceName = "employee_id_seq", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "employee_id_seq")
 	private Integer empid;
-	
+
 	@NotNull
-	@Size(min = 2, max = 30, message="{validation.fullname.size}")
-	@Pattern(regexp = "[-A-Za-z]*", message="{validation.fullname.pattern}")
+	@Size(min = 2, max = 30, message = "{validation.fullname.size}")
+	@Pattern(regexp = "[-A-Za-z]*", message = "{validation.fullname.pattern}")
 	private String fullname;
-	
-	@NotNull(message="{validation.email.notnull}")
-	@Pattern(regexp="^(.+)@(.+)$", message="{validation.email.pattern}")
+
+	@NotNull(message = "{validation.email.notnull}")
+	@Pattern(regexp = "^(.+)@(.+)$", message = "{validation.email.pattern}")
 	private String email;
-	
 
-	@NotNull(message="{validation.mobile.notnull}")
-	@Pattern(regexp = "(0/91)?[7-9][0-9]{9}", message="{validation.mobile.pattern}")
+	@NotNull(message = "{validation.mobile.notnull}")
+	@Pattern(regexp = "(0/91)?[7-9][0-9]{9}", message = "{validation.mobile.pattern}")
 	private String mobile;
-	
 
-	@NotNull(message="{validation.usertype.notnull}")
-	@Min(value=2, message="{validation.usertype.pattern}")
-	@Max(value=3, message="{validation.usertype.pattern}")
+	@NotNull(message = "{validation.usertype.notnull}")
+	@Min(value = 2, message = "{validation.usertype.pattern}")
+	@Max(value = 3, message = "{validation.usertype.pattern}")
 	private Integer usertype;
 	private String password;
 	private Date createdon;
-	
+	private Date lastupdatedon;
+
 	public Integer getEmpid() {
 		return empid;
 	}
+
 	public void setEmpid(Integer empid) {
 		this.empid = empid;
 	}
+
 	public String getFullname() {
 		return fullname;
 	}
+
 	public void setFullname(String fullname) {
 		this.fullname = fullname;
 	}
+
 	public String getEmail() {
 		return email;
 	}
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
 	public String getMobile() {
 		return mobile;
 	}
+
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
+
 	public Integer getUsertype() {
 		return usertype;
 	}
+
 	public void setUsertype(Integer usertype) {
 		this.usertype = usertype;
 	}
+
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
 	public Date getCreatedon() {
 		return createdon;
 	}
+
 	public void setCreatedon(Date createdon) {
 		this.createdon = createdon;
 	}
-	
+
+	public Date getLastupdatedon() {
+		return lastupdatedon;
+	}
+
+	public void setLastupdatedon(Date lastupdatedon) {
+		this.lastupdatedon = lastupdatedon;
+	}
+
 	@Override
 	public String toString() {
 		return "Employees [empid=" + empid + ", fullname=" + fullname + ", email=" + email + ", mobile=" + mobile
-				+ ", usertype=" + usertype + ", password=" + password + ", createdon=" + createdon + "]";
+				+ ", usertype=" + usertype + ", password=" + password + ", createdon=" + createdon + ", lastupdatedon="
+				+ lastupdatedon + "]";
 	}
-	
-	
 
 }

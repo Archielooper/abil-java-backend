@@ -1,21 +1,22 @@
 package com.policy.bazaar.employee;
 
-public class EmployeeCreateResponse {
+public class EmployeeUpdateRequest {
 	
-	private Integer empid;
 	private String fullname;
+	private String mobile;
 	
-	public Integer getEmpid() {
-		return empid;
-	}
-	public void setEmpid(Integer empid) {
-		this.empid = empid;
-	}
+	
 	public String getFullname() {
 		return fullname;
 	}
 	public void setFullname(String fullname) {
 		this.fullname = fullname;
+	}
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 	
 	

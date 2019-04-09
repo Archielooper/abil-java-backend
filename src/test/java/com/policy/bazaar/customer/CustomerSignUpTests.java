@@ -4,9 +4,6 @@ import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,33 +27,28 @@ public class CustomerSignUpTests {
 
 	@Test
 	public void signup() {
-		List<CustomerSignUpMock> customers = new ArrayList<CustomerSignUpMock>();
-
+		// List<CustomerSignUpMock> customers = new ArrayList<CustomerSignUpMock>();
+		CustomerSignUpMock cusMock = new CustomerSignUpMock();
 		{
-			CustomerSignUpMock cusMock = new CustomerSignUpMock();
+
 			cusMock.setFirstname("Archit");
 			cusMock.setLastname("Bhadauria");
-			cusMock.setEmail("a1@b.com");
+			cusMock.setEmail("a7@b.com");
 			cusMock.setMobile("9863876375");
 			cusMock.setPassword("Archit@123");
-			customers.add(cusMock);
+			// customers.add(cusMock);
 
 		}
 
 		try {
 
 			MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/customers/signup")
-					.content(toJsonString(customers)).contentType(MediaType.APPLICATION_JSON)
+					.content(toJsonString(cusMock)).contentType(MediaType.APPLICATION_JSON)
 					.accept(MediaType.APPLICATION_JSON);
-				
-            
-			
-			mvc.perform(requestBuilder.accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data").value(null))
-			.andExpect(jsonPath("$.status").value(true))
-			.andExpect(jsonPath("$.message").value("Successfully Registered"));
-			//Add Comment
+
+			mvc.perform(requestBuilder.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+					.andExpect(jsonPath("$.data").value(null)).andExpect(jsonPath("$.status").value(true))
+					.andExpect(jsonPath("$.message").value("Successfully Registered"));
 
 		} catch (Exception e) {
 			fail("fail ");

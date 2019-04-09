@@ -1,13 +1,15 @@
-package com.policy.bazaar.Employee;
+package com.policy.bazaar.employee;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,5 +60,24 @@ public class EmployeeController {
 
 		return empService.getCustomers();
 
+	}
+	@PutMapping("/update/{empId}")
+	public GlobalResponse updateEmployee(@PathVariable Integer empId,@RequestBody EmployeeUpdateRequest empUpdateRequest) {
+		
+		return empService.updateEmployee(empId,empUpdateRequest);
+	}
+	
+	@PutMapping("/updatepassword/{empId}")
+	public GlobalResponse updatePassword(@PathVariable Integer empId, @RequestBody EmployeeUpdatePasswordRequest empPasswordRequest) {
+		
+		return empService.updatePassword(empId,empPasswordRequest);
+	}
+	
+	@DeleteMapping("/delete/{empId}")
+	public GlobalResponse deleteEmployee(@PathVariable Integer empId)
+	{
+		
+		return empService.deleteEmployee(empId);
+		
 	}
 }

@@ -1,4 +1,4 @@
-package com.policy.bazaar.Policy;
+package com.policy.bazaar.policy;
 
 public class GetPoliciesResponse {
 	

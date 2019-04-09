@@ -1,4 +1,4 @@
-package com.policy.bazaar.Security;
+package com.policy.bazaar.security;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
