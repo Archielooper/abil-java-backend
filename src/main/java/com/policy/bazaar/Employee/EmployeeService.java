@@ -43,6 +43,9 @@ public class EmployeeService {
 	CustomerRepository customerRepository;
 
 	@Autowired
+	SendEmail email;
+
+	@Autowired
 	PoliciesRepository policyRepository;
 
 	public GlobalResponse createEmployee(@Valid EmployeeCreateRequest empDetails) {
@@ -52,7 +55,6 @@ public class EmployeeService {
 		Employeepasswords emppass = new Employeepasswords();
 		UUID uuid = UUID.randomUUID();
 		Employees findByEmail = empRepository.findByEmail(empDetails.getEmail());
-        SendEmail email = new SendEmail();
 		if (findByEmail != null) {
 
 			response.setData(null);
@@ -289,9 +291,71 @@ public class EmployeeService {
 		} else {
 
 			empRepository.deleteById(empId);
-            globalResponse.setData(null);
-            globalResponse.setStatus(true);
-            globalResponse.setMessage("Employee deleted successfully!!!!");
+			globalResponse.setData(null);
+			globalResponse.setStatus(true);
+			globalResponse.setMessage("Employee deleted successfully!!!!");
+		}
+
+		return globalResponse;
+	}
+
+	public GlobalResponse viewAllPurchased() {
+
+		GlobalResponse globalResponse = new GlobalResponse();
+
+		List<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findAll();
+		List<ViewPurchasedPoliciesResponse> viewPurchasedPoliciesResponses = new ArrayList<ViewPurchasedPoliciesResponse>();
+
+		purchasedpolicies.stream().forEach((i) -> {
+			ViewPurchasedPoliciesResponse viewPurchasedPoliciesResponse = new ViewPurchasedPoliciesResponse();
+
+			Optional<Customers> customers = customerRepository.findById(i.getCid());
+			Optional<Policies> policies = policyRepository.findById(i.getPid());
+
+			Customers customer = customers.get();
+			Policies policy = policies.get();
+
+			viewPurchasedPoliciesResponse.setCustomerFullName(customer.getFirstname());
+			viewPurchasedPoliciesResponse.setCustomerLastName(customer.getLastname());
+			viewPurchasedPoliciesResponse.setAmount(policy.getAmount());
+			viewPurchasedPoliciesResponse.setPolicyName(policy.getPolicyname());
+			viewPurchasedPoliciesResponse.setPurchasedid(i.getPurchasedid());
+
+			viewPurchasedPoliciesResponses.add(viewPurchasedPoliciesResponse);
+
+		});
+
+		globalResponse.setData(viewPurchasedPoliciesResponses);
+		globalResponse.setStatus(true);
+		globalResponse.setMessage("All Purchased Policies");
+
+		return globalResponse;
+	}
+
+	public GlobalResponse updateStatus(updateStatusRequest updateRequest) {
+
+		GlobalResponse globalResponse = new GlobalResponse();
+
+		Optional<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository
+				.findById(updateRequest.getPurchasedid());
+
+		Purchasedpolicies purchasedpolicy = purchasedpolicies.get();
+
+		if (purchasedpolicy.getStatus() != 1) {
+
+			globalResponse.setData(null);
+			globalResponse.setStatus(false);
+			globalResponse.setMessage("Not Allowed!!!!");
+
+		} else {
+
+			purchasedpolicy.setStatus(updateRequest.getStatus());
+			purchasedPoliciesRepository.save(purchasedpolicy);
+
+			globalResponse.setData(null);
+			globalResponse.setStatus(true);
+			globalResponse.setMessage("Status Changed!!!!");
+
 		}
 
 		return globalResponse;

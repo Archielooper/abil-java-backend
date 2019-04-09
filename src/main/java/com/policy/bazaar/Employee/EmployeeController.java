@@ -80,4 +80,17 @@ public class EmployeeController {
 		return empService.deleteEmployee(empId);
 		
 	}
+	
+	@GetMapping("/viewallpurchasedpolicies")
+	public GlobalResponse viewAllPurchased() {
+		
+		return empService.viewAllPurchased();
+	}
+	
+	@PutMapping("/updateStatus")
+	public GlobalResponse updateStatus(@RequestBody updateStatusRequest updateRequest) {
+		
+		return empService.updateStatus(updateRequest);
+	}
+	
 }

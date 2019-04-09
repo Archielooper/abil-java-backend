@@ -189,6 +189,7 @@ public class CustomerService {
 		Purchasedpolicies purchasedpolicies = new Purchasedpolicies();
 		purchasedpolicies.setPid(request.getPid());
 		purchasedpolicies.setCid(request.getCid());
+		purchasedpolicies.setStatus(1);
 		purchasedpolicies.setStartdate(new Date());
 		purchasedpolicies.setEnddate(cal.getTime());
 		purchasedpolicies.setCreatedon(new Date());

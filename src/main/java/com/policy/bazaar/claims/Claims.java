@@ -64,8 +64,8 @@ public class Claims {
 	public Integer getAmount() {
 		return amount;
 	}
-	public void setAmount(Integer amount) {
-		this.amount = amount;
+	public void setAmount(Integer string) {
+		this.amount = string;
 	}
 	public Date getStartdate() {
 		return startdate;
