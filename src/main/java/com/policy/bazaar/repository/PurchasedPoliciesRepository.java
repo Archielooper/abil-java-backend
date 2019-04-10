@@ -11,5 +11,5 @@ import com.policy.bazaar.policy.Purchasedpolicies;
 public interface PurchasedPoliciesRepository extends JpaRepository<Purchasedpolicies, Integer> {
 
 	List<Purchasedpolicies> findByCid(Integer cid);
-
+	List<Purchasedpolicies> findAll();
 }

@@ -37,7 +37,7 @@ public class CustomerController {
 	@GetMapping("/getProfile/{cid}")
 	public GlobalResponse getProfile(HttpServletRequest request,@PathVariable Integer cid)
 	{    
-		System.out.println(request.getAttribute("user"));
+		//System.out.println(request.getAttribute("user"));
 		
 		return customerService.getProfile(cid);
 		

@@ -56,7 +56,7 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/getCustomers")
-	public GlobalResponse getCustomers(HttpServletRequest requestSS) {
+	public GlobalResponse getCustomers() {
 
 		return empService.getCustomers();
 
@@ -68,7 +68,7 @@ public class EmployeeController {
 	}
 	
 	@PutMapping("/updatepassword/{empId}")
-	public GlobalResponse updatePassword(@PathVariable Integer empId, @RequestBody EmployeeUpdatePasswordRequest empPasswordRequest) {
+	public GlobalResponse updatePassword(@PathVariable Integer empId,@RequestBody EmployeeUpdatePasswordRequest empPasswordRequest) {
 		
 		return empService.updatePassword(empId,empPasswordRequest);
 	}

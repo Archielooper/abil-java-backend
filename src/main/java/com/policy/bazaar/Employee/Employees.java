@@ -1,6 +1,8 @@
 package com.policy.bazaar.employee;
 
-import java.sql.Date;
+
+
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,7 +25,7 @@ public class Employees {
 
 	@NotNull
 	@Size(min = 2, max = 30, message = "{validation.fullname.size}")
-	@Pattern(regexp = "[-A-Za-z]*", message = "{validation.fullname.pattern}")
+	//@Pattern(regexp = "[-A-Za-z]*", message = "{validation.fullname.pattern}")
 	private String fullname;
 
 	@NotNull(message = "{validation.email.notnull}")

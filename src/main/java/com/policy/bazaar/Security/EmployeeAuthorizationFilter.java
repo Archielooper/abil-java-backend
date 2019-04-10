@@ -17,13 +17,14 @@ import javax.xml.bind.DatatypeConverter;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.filter.GenericFilterBean;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
-public class EmployeeAuthorizationFilter extends GenericFilterBean{
-	
+public class EmployeeAuthorizationFilter extends GenericFilterBean {
+
 	@Override
 	public void destroy() {
 	}
@@ -33,7 +34,13 @@ public class EmployeeAuthorizationFilter extends GenericFilterBean{
 			throws IOException, ServletException {
 
 		HttpServletRequest req = (HttpServletRequest) request;
+
 		HttpServletResponse res = (HttpServletResponse) response;
+
+		if (RequestMethod.OPTIONS.name().equals(req.getMethod())) {
+			filterchain.doFilter(req, res);
+			return;
+		}
 
 		try {
 			if (isTokenValid(req)) {
@@ -97,11 +104,10 @@ public class EmployeeAuthorizationFilter extends GenericFilterBean{
 			result = false;
 
 		} else {
-               result = true;
+			result = true;
 		}
 
 		return result;
 	}
-
 
 }

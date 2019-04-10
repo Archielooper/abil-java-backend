@@ -1,7 +1,7 @@
 package com.policy.bazaar.employee;
 
-import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,6 +10,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.policy.bazaar.customers.Customers;
 import com.policy.bazaar.encryption.AES256Encryption;
@@ -73,7 +74,7 @@ public class EmployeeService {
 			empPasswordRepository.save(emppass);
 			emp1.setEmpid(emp.getEmpid());
 			emp1.setFullname(emp.getFullname());
-			email.sendEmail(empDetails.getEmail());
+			email.sendEmail(empDetails.getEmail(), emppass.getUuid());
 			response.setData(emp1);
 			response.setStatus(true);
 			response.setMessage("Successfully Registered");
@@ -196,25 +197,29 @@ public class EmployeeService {
 		GlobalResponse globalResponse = new GlobalResponse();
 		List<PurchasedPoliciesResponse> purchasedPoliciesResponses = new ArrayList<PurchasedPoliciesResponse>();
 
-		purchasedpolicies.stream().forEach((j) -> {
+		if (!CollectionUtils.isEmpty(purchasedpolicies)) {
+			purchasedpolicies.stream().forEach(purchasedpolicy -> {
 
-			Optional<Customers> customers = customerRepository.findById(j.getCid());
-			Optional<Policies> policies = policyRepository.findById(j.getPid());
-			PurchasedPoliciesResponse purchasedresponse = new PurchasedPoliciesResponse();
-			Customers customer = customers.get();
-			Policies policy = policies.get();
-			purchasedresponse.setCustomerfirstname(customer.getFirstname());
-			purchasedresponse.setCustomerlastname(customer.getLastname());
-			purchasedresponse.setStartdate(j.getStartdate());
-			purchasedresponse.setEnddate(j.getEnddate());
-			purchasedresponse.setPolicyname(policy.getPolicyname());
-			purchasedresponse.setAmount(policy.getAmount());
-			purchasedPoliciesResponses.add(purchasedresponse);
-			globalResponse.setData(purchasedPoliciesResponses);
-			globalResponse.setStatus(true);
-			globalResponse.setMessage("Authorized!!!!");
+				Optional<Customers> customerOpt = customerRepository.findById(purchasedpolicy.getCid());
+				Optional<Policies> customerpolicyOpt = policyRepository.findById(purchasedpolicy.getPid());
+				Customers customer = customerOpt.get();
+				Policies customerpolicy = customerpolicyOpt.get();
 
-		});
+				PurchasedPoliciesResponse purchasedresponse = new PurchasedPoliciesResponse();
+				purchasedresponse.setCustomerfirstname(customer.getFirstname());
+				purchasedresponse.setCustomerlastname(customer.getLastname());
+				purchasedresponse.setStartdate(purchasedpolicy.getStartdate());
+				purchasedresponse.setEnddate(purchasedpolicy.getEnddate());
+				purchasedresponse.setPolicyname(customerpolicy.getPolicyname());
+				purchasedresponse.setAmount(customerpolicy.getAmount());
+
+				purchasedPoliciesResponses.add(purchasedresponse);
+
+			});
+		}
+		globalResponse.setData(purchasedPoliciesResponses);
+		globalResponse.setStatus(true);
+		globalResponse.setMessage("Authorized!!!!");
 
 		return globalResponse;
 	}
@@ -256,23 +261,27 @@ public class EmployeeService {
 
 		} else {
 
-			String encryptedOldPassword = AES256Encryption.encrypt(empPasswordRequest.getOldPassword(),
-					AES256Encryption.secretKey);
-			if (emp.getPassword() != encryptedOldPassword) {
+			String encryptedOldPassword = AES256Encryption
+					.encrypt(empPasswordRequest.getOldPassword(), AES256Encryption.secretKey).intern();
 
-				globalResponse.setData(null);
-				globalResponse.setMessage("You have entered a wrong password");
-				globalResponse.setStatus(false);
-			} else {
+			String a = emp.getPassword().intern();
 
+			if (a == encryptedOldPassword) {
 				String encryptedNewPassword = AES256Encryption.encrypt(empPasswordRequest.getNewPassword(),
 						AES256Encryption.secretKey);
 
 				emp.setPassword(encryptedNewPassword);
+				emp.setLastupdatedon(new Date());
 				empRepository.save(emp);
 				globalResponse.setData(null);
 				globalResponse.setMessage("Password Change Successfully!!!");
 				globalResponse.setStatus(true);
+
+			} else {
+
+				globalResponse.setData(null);
+				globalResponse.setMessage("You have entered a wrong password");
+				globalResponse.setStatus(false);
 			}
 
 		}

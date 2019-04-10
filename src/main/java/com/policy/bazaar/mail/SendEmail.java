@@ -4,22 +4,19 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.mail.Authenticator;
-import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -32,14 +29,14 @@ import org.springframework.stereotype.Component;
 public class SendEmail {
 
 	final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
-	
+
 	@Value("${user.username}")
 	String username = "{user.username}";
 
 	@Value("${password}")
 	String password = "{password}";
 
-	public void sendEmail(String to) {
+	public void sendEmail(String to, UUID uuid) {
 
 		Base64.Decoder decoder = Base64.getDecoder();
 		String decodedpassword = new String(decoder.decode(password));
@@ -66,22 +63,11 @@ public class SendEmail {
 			message.setFrom(new InternetAddress(username));
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 			message.setSubject("Set your password!!!");
-		    MimeMultipart multipart = new MimeMultipart();
-            BodyPart messageBodyPart = new MimeBodyPart();
-            
-            //Set key values
-            Map<String, String> input = new HashMap<String, String>();
-               input.put("Archit", "policyApp.com");
-               input.put("Topic", "Set Password");
-               input.put("Content In", "English");
-             
-            //HTML mail content
-            String htmlText = readEmailFromHtml("C:/Users/manand/Downloads/bazaar/src/main/java/com/policy/bazaar/mail/mailTemplate.html",input);
-            messageBodyPart.setContent(htmlText, "text/html");
-            
-            multipart.addBodyPart(messageBodyPart); 
-            message.setContent(multipart);
- 
+
+			message.setText(
+					"<!DOCTYPE html><html><head><meta charset=\"ISO-8859-1\"><title>Mail Template</title></head><body> <h2> Your account has been created!!!!! </h2> <p> Click on the following link to set your password:<a href='http://localhost:4200/create-password/"
+							+ uuid + "'> Click Here! </a> </p></body></html>",
+					"UTF-8", "html");
 
 			Transport.send(message);
 			System.out.println("Sent message successfully");
@@ -89,47 +75,6 @@ public class SendEmail {
 			mex.printStackTrace();
 		}
 
-	}
-	
-	protected String readEmailFromHtml(String filePath, Map<String, String> input)
-	{
-	    String msg = readContentFromFile(filePath);
-	    try
-	    {
-	    Set<Entry<String, String>> entries = input.entrySet();
-	    for(Map.Entry<String, String> entry : entries) {
-	        msg = msg.replace(entry.getKey().trim(), entry.getValue().trim());
-	    }
-	    }
-	    catch(Exception exception)
-	    {
-	        exception.printStackTrace();
-	    }
-	    return msg;
-	}
-	//Method to read HTML file as a String 
-	private String readContentFromFile(String fileName)
-	{
-	    StringBuffer contents = new StringBuffer();
-	    
-	    try {
-	      //use buffering, reading one line at a time
-	      BufferedReader reader =  new BufferedReader(new FileReader(fileName));
-	      try {
-	        String line = null; 
-	        while (( line = reader.readLine()) != null){
-	          contents.append(line);
-	          contents.append(System.getProperty("line.separator"));
-	        }
-	      }
-	      finally {
-	          reader.close();
-	      }
-	    }
-	    catch (IOException ex){
-	      ex.printStackTrace();
-	    }
-	    return contents.toString();
 	}
 
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.policy.bazaar.customers.Customers;
 import com.policy.bazaar.globalresponse.GlobalResponse;
 import com.policy.bazaar.policy.Policies;
+import com.policy.bazaar.repository.ClaimsRepository;
 import com.policy.bazaar.repository.CustomerRepository;
 import com.policy.bazaar.repository.PoliciesRepository;
 

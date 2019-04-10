@@ -56,7 +56,7 @@ public class BazaarApplication {
 
 	    FilterRegistrationBean<EmployeeAuthorizationFilter> registration = new FilterRegistrationBean<>();
 	    registration.setFilter(getEmployeeAuthorizationFilter());
-	    registration.addUrlPatterns("/employee/createEmployee","/employee/createPolicy","/employee/setPassword","/employee/getProfile/*");
+	    registration.addUrlPatterns("/employee/createEmployee","/employee/createPolicy","/employee/getProfile/*","/employee/getEmployees","/employee/updatepassword/*");
 	    registration.setName("employeeAuthorizationFilter");
 	    registration.setOrder(1);
 	    return registration;
