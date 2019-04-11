@@ -1,11 +1,16 @@
 spring:
-  jpa:
+  jpa: 
     properties:
       hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+        formatSql: true
         jdbc:
           lob:
-            non_contextual_creation:true
-
+            non-contextual-creation: true
+      database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    
+            
   datasource:
     url: jdbc:postgresql://localhost:5432/policybazar
     username: postgres

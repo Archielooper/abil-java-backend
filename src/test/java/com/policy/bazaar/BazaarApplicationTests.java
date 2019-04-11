@@ -55,19 +55,6 @@ public class BazaarApplicationTests {
 		}
 	}
 
-	@Test
-	public void checkpurchasedpolicies() {
 
-		try {
-			String validToken = "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MjAxNiwiZXhwIjoxMTU1NDM2NzY4NX0.QRlosEluAmlIFXIDWwN8CvWxsiEdVQqnOkrbdM6NN-E";
-			String values = String.format("Bearer %s", validToken);
-			mvc.perform(MockMvcRequestBuilders.get("/customers/getpurchasedpolicies/2014")
-					.header("Authorization", values).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-					.andExpect(jsonPath("$.data[0].policyname").value("LIC JeevanAkshay"))
-					.andExpect(jsonPath("$.data[0].startdate").value("2018-12-22T18:30:00.000+0000"));
-		} catch (Exception e) {
-			fail("fail ");
-		}
-	}
 
 }

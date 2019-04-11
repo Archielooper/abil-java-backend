@@ -32,41 +32,38 @@ public class BazaarApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BazaarApplication.class, args);
 	}
-	
-	
+
 	@Bean
 	public FilterRegistrationBean<JWTAuthorizationFilter> JWTAuthorizationFilterRegistration() {
 
-	    FilterRegistrationBean<JWTAuthorizationFilter> registration = new FilterRegistrationBean<>();
-	    registration.setFilter(getJWTAuthorizationFilter());
-	    registration.addUrlPatterns("/customers/getProfile/*","/customers/getpurchasedpolicies/*","/addpolicies");
-	    registration.setName("jwtAuthorizationFilter");
-	    registration.setOrder(2);
-	    return registration;
-	} 
-	
-	
+		FilterRegistrationBean<JWTAuthorizationFilter> registration = new FilterRegistrationBean<>();
+		registration.setFilter(getJWTAuthorizationFilter());
+		registration.addUrlPatterns("/customers/getProfile/*", "/customers/getpurchasedpolicies/*", "/addpolicies");
+		registration.setName("jwtAuthorizationFilter");
+		registration.setOrder(2);
+		return registration;
+	}
+
 	@Bean(name = "jWTAuthorizationFilterBean")
 	public JWTAuthorizationFilter getJWTAuthorizationFilter() {
-	    return new JWTAuthorizationFilter();
+		return new JWTAuthorizationFilter();
 	}
-       
+
 	@Bean
 	public FilterRegistrationBean<EmployeeAuthorizationFilter> employeeAuthorizationFilterRegistration() {
 
-	    FilterRegistrationBean<EmployeeAuthorizationFilter> registration = new FilterRegistrationBean<>();
-	    registration.setFilter(getEmployeeAuthorizationFilter());
-	    registration.addUrlPatterns("/employee/createEmployee","/employee/createPolicy","/employee/getProfile/*","/employee/getEmployees","/employee/updatepassword/*");
-	    registration.setName("employeeAuthorizationFilter");
-	    registration.setOrder(1);
-	    return registration;
-	} 
-	
-	
-	@Bean(name = "employeeAuthorizationFilterBean")
-	public EmployeeAuthorizationFilter getEmployeeAuthorizationFilter() {
-	    return new EmployeeAuthorizationFilter();
+		FilterRegistrationBean<EmployeeAuthorizationFilter> registration = new FilterRegistrationBean<>();
+		registration.setFilter(getEmployeeAuthorizationFilter());
+		registration.addUrlPatterns("/employee/createEmployee", "/employee/createPolicy", "/employee/getProfile/*",
+				"/employee/getEmployees", "/employee/updatepassword/*");
+		registration.setName("employeeAuthorizationFilter");
+		registration.setOrder(1);
+		return registration;
 	}
 
+	@Bean(name = "employeeAuthorizationFilterBean")
+	public EmployeeAuthorizationFilter getEmployeeAuthorizationFilter() {
+		return new EmployeeAuthorizationFilter();
+	}
 
 }

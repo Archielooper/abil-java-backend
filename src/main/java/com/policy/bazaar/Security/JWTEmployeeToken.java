@@ -9,7 +9,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.policy.bazaar.employee.Employees;
+import com.policy.bazaar.employee.model.Employees;
 
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
