@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.policy.bazaar.common.exception.NotFoundException;
@@ -41,12 +43,14 @@ public class PolicyService {
 		return response;
 	}
 
-	public GlobalResponse getPolicies() {
+	public GlobalResponse getPolicies(Pageable pageable) {
 
-		List<Policies> policies = policyRepository.findAll();
+		Page<Policies> page = policyRepository.findAll(pageable);
+
+		// List<Policies> policies = policyRepository.findAll(pageable);
 		List<GetPoliciesResponse> getPoList = new ArrayList<GetPoliciesResponse>();
 		GlobalResponse globalResponse = new GlobalResponse();
-		policies.stream().forEach((i) -> {
+		page.stream().forEach((i) -> {
 
 			GetPoliciesResponse getPoliciesResponse = new GetPoliciesResponse();
 			getPoliciesResponse.setPid(i.getPid());
@@ -73,7 +77,7 @@ public class PolicyService {
 
 			globalResponse.setData(null);
 			globalResponse.setStatus(false);
-			globalResponse.setMessage("Policy with the id- "+pid+" not found!!!");
+			globalResponse.setMessage("Policy with the id- " + pid + " not found!!!");
 
 		} else {
 

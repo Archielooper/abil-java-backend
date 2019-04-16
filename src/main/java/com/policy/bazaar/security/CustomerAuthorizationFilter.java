@@ -23,7 +23,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
-public class JWTAuthorizationFilter extends GenericFilterBean {
+public class CustomerAuthorizationFilter extends GenericFilterBean {
 
 	@Override
 	public void destroy() {
@@ -72,7 +72,7 @@ public class JWTAuthorizationFilter extends GenericFilterBean {
 		if (token != null) {
 
 			Claims claim = (Claims) Jwts.parser()
-					.setSigningKey(DatatypeConverter.parseBase64Binary(JwtToken.SECRET_KEY))
+					.setSigningKey(DatatypeConverter.parseBase64Binary(JwtCustomerToken.SECRET_KEY))
 					.parseClaimsJws(token.replace("Bearer", "")).getBody();
 
 			Map<String, Object> user = getMapFromIoJsonwebtokenClaims(claim);

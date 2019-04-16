@@ -3,6 +3,8 @@ package com.policy.bazaar.policy.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,32 +24,33 @@ import com.policy.bazaar.policy.service.PolicyService;
 @RequestMapping("/policy")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PolicyController {
-	
+
 	@Autowired
-	PolicyService policyService; 
-	
+	PolicyService policyService;
+
 	@PostMapping("/createPolicy")
 	public GlobalResponse createPolicy(@Valid @RequestBody CreatePolicyRequest policyDetails) {
 
 		return policyService.createPolicy(policyDetails);
 	}
-	
-	@GetMapping("/getPolicies")
-	public GlobalResponse getPolicies() {
-		return policyService.getPolicies();
+
+	@GetMapping("/getPolicies/")
+	public GlobalResponse getPolicies(@PageableDefault(value = 3, page = 0) Pageable pageable) {
+		return policyService.getPolicies(pageable);
 
 	}
-	
+
 	@PutMapping("/update/{pid}")
-	public GlobalResponse updatePolicy(@PathVariable Integer pid, @RequestBody UpdatePolicyRequest updatePolicyRequest) {
-		
+	public GlobalResponse updatePolicy(@PathVariable Integer pid,
+			@RequestBody UpdatePolicyRequest updatePolicyRequest) {
+
 		return policyService.updatePolicy(pid, updatePolicyRequest);
-		
+
 	}
-	
+
 	@DeleteMapping("/delete/{pid}")
 	public GlobalResponse deletePolicy(@PathVariable Integer pid) {
-		
+
 		return policyService.deletePolicy(pid);
 	}
 

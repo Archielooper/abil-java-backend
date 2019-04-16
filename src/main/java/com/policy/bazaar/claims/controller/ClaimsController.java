@@ -1,6 +1,8 @@
 package com.policy.bazaar.claims.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,10 +34,10 @@ public class ClaimsController {
 		return claimservice.updateClaims(changerequest);
 	}
 	
-	@GetMapping("/viewAll")
-	public GlobalResponse viewAllClaims() {
+	@GetMapping("/viewAll/")
+	public GlobalResponse viewAllClaims(@PageableDefault(value = 1, page = 0) Pageable pageable) {
 		
-		return claimservice.viewAllClaims();
+		return claimservice.viewAllClaims(pageable);
 	}
 	
 }

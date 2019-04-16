@@ -15,10 +15,10 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-public class JwtToken {
+public class JwtCustomerToken {
 
 	public static String SECRET_KEY = "Thisismysecretkey!@#$%%^";
-	public static Logger logger = LoggerFactory.getLogger(JwtToken.class);
+	public static Logger logger = LoggerFactory.getLogger(JwtCustomerToken.class);
 
 	public static String createJWT(long ttlMillis, Customers customers) {
 

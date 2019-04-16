@@ -9,9 +9,10 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import com.policy.bazaar.common.exception.NotFoundException;
 import com.policy.bazaar.common.exception.PolicyBazaarServiceException;
@@ -114,7 +115,7 @@ public class EmployeeService {
 
 			String password = findByEmail.getPassword();
 			String userPassword = AES256Encryption.encrypt(empLogin.getPassword(), AES256Encryption.secretKey);
-			Integer empUserType = findByEmail.getUsertype();
+			Byte empUserType = findByEmail.getUsertype();
 
 			Response response1 = new Response();
 			response1.setAuth(true);
@@ -187,14 +188,14 @@ public class EmployeeService {
 		return globalResponse;
 	}
 
-	public GlobalResponse getEmployees() {
+	public GlobalResponse getEmployees(Pageable pageable) {
 
-		List<Employees> listEmployees = empRepository.findAll();
+		Page<Employees> employees = empRepository.findAll(pageable);
 
 		List<EmployeeResponse> employeeResponse = new ArrayList<EmployeeResponse>();
 		GlobalResponse globalResponse = new GlobalResponse();
 
-		listEmployees.stream().forEach((i) -> {
+		employees.stream().forEach((i) -> {
 			if (i.getUsertype() == 2 || i.getUsertype() == 3) {
 				EmployeeResponse empResponse = new EmployeeResponse();
 				empResponse.setFullname(i.getFullname());
@@ -211,32 +212,31 @@ public class EmployeeService {
 		return globalResponse;
 	}
 
-	public GlobalResponse getCustomers() {
+	public GlobalResponse getCustomers(Pageable pageable) {
 
-		List<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findAll();
+		Page<Purchasedpolicies> page = purchasedPoliciesRepository.findAll(pageable);
 		GlobalResponse globalResponse = new GlobalResponse();
 		List<PurchasedPoliciesResponse> purchasedPoliciesResponses = new ArrayList<PurchasedPoliciesResponse>();
 
-		if (!CollectionUtils.isEmpty(purchasedpolicies)) {
-			purchasedpolicies.stream().forEach(purchasedpolicy -> {
+		page.stream().forEach(purchasedpolicy -> {
 
-				Optional<Customers> customerOpt = customerRepository.findById(purchasedpolicy.getCid());
-				Optional<Policies> customerpolicyOpt = policyRepository.findById(purchasedpolicy.getPid());
-				Customers customer = customerOpt.get();
-				Policies customerpolicy = customerpolicyOpt.get();
+			Optional<Customers> customerOpt = customerRepository.findById(purchasedpolicy.getCid());
+			Optional<Policies> customerpolicyOpt = policyRepository.findById(purchasedpolicy.getPid());
+			Customers customer = customerOpt.get();
+			Policies customerpolicy = customerpolicyOpt.get();
 
-				PurchasedPoliciesResponse purchasedresponse = new PurchasedPoliciesResponse();
-				purchasedresponse.setCustomerfirstname(customer.getFirstname());
-				purchasedresponse.setCustomerlastname(customer.getLastname());
-				purchasedresponse.setStartdate(purchasedpolicy.getStartdate());
-				purchasedresponse.setEnddate(purchasedpolicy.getEnddate());
-				purchasedresponse.setPolicyname(customerpolicy.getPolicyname());
-				purchasedresponse.setAmount(customerpolicy.getAmount());
+			PurchasedPoliciesResponse purchasedresponse = new PurchasedPoliciesResponse();
+			purchasedresponse.setCustomerfirstname(customer.getFirstname());
+			purchasedresponse.setCustomerlastname(customer.getLastname());
+			purchasedresponse.setStartdate(purchasedpolicy.getStartdate());
+			purchasedresponse.setEnddate(purchasedpolicy.getEnddate());
+			purchasedresponse.setPolicyname(customerpolicy.getPolicyname());
+			purchasedresponse.setAmount(customerpolicy.getAmount());
 
-				purchasedPoliciesResponses.add(purchasedresponse);
+			purchasedPoliciesResponses.add(purchasedresponse);
 
-			});
-		}
+		});
+
 		globalResponse.setData(purchasedPoliciesResponses);
 		globalResponse.setStatus(true);
 		globalResponse.setMessage("Authorized!!!!");
@@ -328,11 +328,11 @@ public class EmployeeService {
 		return globalResponse;
 	}
 
-	public GlobalResponse viewAllPurchased() {
+	public GlobalResponse viewAllPurchased(Pageable pageable) {
 
 		GlobalResponse globalResponse = new GlobalResponse();
 
-		List<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findAll();
+		Page<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findAll(pageable);
 		List<ViewPurchasedPoliciesResponse> viewPurchasedPoliciesResponses = new ArrayList<ViewPurchasedPoliciesResponse>();
 
 		purchasedpolicies.stream().forEach((i) -> {

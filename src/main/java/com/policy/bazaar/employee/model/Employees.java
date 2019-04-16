@@ -16,6 +16,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Entity
+
 public class Employees {
 
 	@Id
@@ -39,7 +40,7 @@ public class Employees {
 	@NotNull(message = "{validation.usertype.notnull}")
 	@Min(value = 2, message = "{validation.usertype.pattern}")
 	@Max(value = 3, message = "{validation.usertype.pattern}")
-	private Integer usertype;
+	private Byte usertype;
 	private String password;
 	private Date createdon;
 	private Date lastupdatedon;
@@ -76,11 +77,11 @@ public class Employees {
 		this.mobile = mobile;
 	}
 
-	public Integer getUsertype() {
+	public Byte getUsertype() {
 		return usertype;
 	}
 
-	public void setUsertype(Integer usertype) {
+	public void setUsertype(Byte usertype) {
 		this.usertype = usertype;
 	}
 

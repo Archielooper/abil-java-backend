@@ -26,7 +26,7 @@ import com.policy.bazaar.policy.model.Purchasedpolicies;
 import com.policy.bazaar.repository.CustomerRepository;
 import com.policy.bazaar.repository.PoliciesRepository;
 import com.policy.bazaar.repository.PurchasedPoliciesRepository;
-import com.policy.bazaar.security.JwtToken;
+import com.policy.bazaar.security.JwtCustomerToken;
 
 @Service
 @Transactional
@@ -98,7 +98,7 @@ public class CustomerService {
 			String userPassword = AES256Encryption.encrypt(customerSignInRequest.getPassword(),
 					AES256Encryption.secretKey);
 			if (password.equals(userPassword)) {
-				response.setData(JwtToken.createJWT(10000000L, customer));
+				response.setData(JwtCustomerToken.createJWT(10000000L, customer));
 				response.setStatus(true);
 				response.setMessage("Authenticated!!!!!");
 			} else {

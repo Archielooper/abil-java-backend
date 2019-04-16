@@ -18,7 +18,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JWTEmployeeToken {
 	
 	public static String SECRET_KEY = "Thisismysecretkey11122!@#$%%^";
-	public static Logger logger = LoggerFactory.getLogger(JwtToken.class);
+	public static Logger logger = LoggerFactory.getLogger(JwtCustomerToken.class);
 
 	public static String createJWT(long ttlMillis, Employees employees) {
 

@@ -24,12 +24,12 @@ public class EmployeeCreateRequest {
 	@NotNull(message="{validation.usertype.notnull}")
 	@Min(value=2, message="{validation.usertype.pattern}")
 	@Max(value=3, message="{validation.usertype.pattern}")
-	private Integer usertype;
+	private Byte usertype;
 	
-	public Integer getUsertype() {
+	public Byte getUsertype() {
 		return usertype;
 	}
-	public void setUsertype(Integer usertype) {
+	public void setUsertype(Byte usertype) {
 		this.usertype = usertype;
 	}
 	public String getFullname() {

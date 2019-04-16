@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.policy.bazaar.claims.model.Claims;
@@ -75,14 +77,14 @@ public class ClaimService {
 		return globalResponse;
 	}
 
-	public GlobalResponse viewAllClaims() {
+	public GlobalResponse viewAllClaims(Pageable pageable) {
 
 		GlobalResponse globalResponse = new GlobalResponse();
 		List<ViewPoliciesResponse> listvPoliciesResponses = new ArrayList<ViewPoliciesResponse>(); 
 
-		List<Claims> claims = claimsRepository.findAll();
+		Page<Claims> page = claimsRepository.findAll(pageable);
 
-		claims.stream().forEach((i) -> {
+		page.stream().forEach((i) -> {
 
 			ViewPoliciesResponse viewPoliciesResponse = new ViewPoliciesResponse();
 

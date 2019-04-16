@@ -6,7 +6,7 @@ public class EmployeeResponse {
 	
 	private String email;
 	private String mobile;
-	private Integer userType;
+	private Byte userType;
 	public String getFullname() {
 		return fullname;
 	}
@@ -25,10 +25,10 @@ public class EmployeeResponse {
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
-	public Integer getUserType() {
+	public Byte getUserType() {
 		return userType;
 	}
-	public void setUserType(Integer userType) {
+	public void setUserType(Byte userType) {
 		this.userType = userType;
 	}
 	

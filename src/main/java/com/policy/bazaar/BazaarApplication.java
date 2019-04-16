@@ -6,12 +6,14 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import com.policy.bazaar.security.CustomerAuthorizationFilter;
 import com.policy.bazaar.security.EmployeeAuthorizationFilter;
-import com.policy.bazaar.security.JWTAuthorizationFilter;
 
 @SpringBootApplication
+@EnableScheduling
 public class BazaarApplication {
 
 	@Bean
@@ -34,9 +36,9 @@ public class BazaarApplication {
 	}
 
 	@Bean
-	public FilterRegistrationBean<JWTAuthorizationFilter> JWTAuthorizationFilterRegistration() {
+	public FilterRegistrationBean<CustomerAuthorizationFilter> JWTAuthorizationFilterRegistration() {
 
-		FilterRegistrationBean<JWTAuthorizationFilter> registration = new FilterRegistrationBean<>();
+		FilterRegistrationBean<CustomerAuthorizationFilter> registration = new FilterRegistrationBean<>();
 		registration.setFilter(getJWTAuthorizationFilter());
 		registration.addUrlPatterns("/customers/getProfile/*", "/customers/getpurchasedpolicies/*", "/addpolicies");
 		registration.setName("jwtAuthorizationFilter");
@@ -45,8 +47,8 @@ public class BazaarApplication {
 	}
 
 	@Bean(name = "jWTAuthorizationFilterBean")
-	public JWTAuthorizationFilter getJWTAuthorizationFilter() {
-		return new JWTAuthorizationFilter();
+	public CustomerAuthorizationFilter getJWTAuthorizationFilter() {
+		return new CustomerAuthorizationFilter();
 	}
 
 	@Bean

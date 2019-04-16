@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,16 +68,16 @@ public class EmployeeController {
 
 	}
 
-	@GetMapping("/getEmployees")
-	public GlobalResponse getEmployees() {
+	@GetMapping("/getEmployees/")
+	public GlobalResponse getEmployees(@PageableDefault(value = 3, page = 0) Pageable pageable) {
 
-		return empService.getEmployees();
+		return empService.getEmployees(pageable);
 	}
 
-	@GetMapping("/getCustomers")
-	public GlobalResponse getCustomers() {
+	@GetMapping("/getCustomers/")
+	public GlobalResponse getCustomers(@PageableDefault(value = 3, page = 0) Pageable pageable) {
 
-		return empService.getCustomers();
+		return empService.getCustomers(pageable);
 
 	}
 
@@ -100,10 +102,10 @@ public class EmployeeController {
 
 	}
 
-	@GetMapping("/viewallpurchasedpolicies")
-	public GlobalResponse viewAllPurchased() {
+	@GetMapping("/viewallpurchasedpolicies/")
+	public GlobalResponse viewAllPurchased(@PageableDefault(value = 3, page = 0) Pageable pageable) {
 
-		return empService.viewAllPurchased();
+		return empService.viewAllPurchased(pageable);
 	}
 
 	@PutMapping("/updateStatus")
