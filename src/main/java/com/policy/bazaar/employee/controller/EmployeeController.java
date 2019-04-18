@@ -5,6 +5,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -68,8 +69,8 @@ public class EmployeeController {
 
 	}
 
-	@GetMapping("/getEmployees/")
-	public GlobalResponse getEmployees(@PageableDefault(value = 3, page = 0) Pageable pageable) {
+	@GetMapping("/getEmployees/{page}/{size}")
+	public GlobalResponse getEmployees(@PageableDefault(page = 0, size = 2, sort = "empid", direction = Direction.ASC) Pageable pageable) {
 
 		return empService.getEmployees(pageable);
 	}

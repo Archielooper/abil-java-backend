@@ -8,5 +8,7 @@ import com.policy.bazaar.policy.model.Policies;
 @Repository
 public interface PoliciesRepository extends JpaRepository<Policies, Integer>
 {
-
+           
+//	@Query("Select policyname from policies")
+//	List<Policies> findByPurchasedFindAll();
 }

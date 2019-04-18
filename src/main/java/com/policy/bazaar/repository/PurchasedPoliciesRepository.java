@@ -12,4 +12,6 @@ public interface PurchasedPoliciesRepository extends JpaRepository<Purchasedpoli
 
 	List<Purchasedpolicies> findByCid(Integer cid);
 	List<Purchasedpolicies> findAll();
+	
+	
 }

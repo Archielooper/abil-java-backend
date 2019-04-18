@@ -45,12 +45,14 @@ public class PolicyService {
 
 	public GlobalResponse getPolicies(Pageable pageable) {
 
-		Page<Policies> page = policyRepository.findAll(pageable);
+		Page<Policies> policies = policyRepository.findAll(pageable);
 
-		// List<Policies> policies = policyRepository.findAll(pageable);
+		
+	//	List<Policies> policies = policyRepository.findByPurchasedFindAll();
+		
 		List<GetPoliciesResponse> getPoList = new ArrayList<GetPoliciesResponse>();
 		GlobalResponse globalResponse = new GlobalResponse();
-		page.stream().forEach((i) -> {
+		policies.stream().forEach((i) -> {
 
 			GetPoliciesResponse getPoliciesResponse = new GetPoliciesResponse();
 			getPoliciesResponse.setPid(i.getPid());
