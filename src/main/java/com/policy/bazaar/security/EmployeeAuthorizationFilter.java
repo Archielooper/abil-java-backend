@@ -34,31 +34,31 @@ public class EmployeeAuthorizationFilter extends GenericFilterBean {
 			throws IOException, ServletException {
 
 		HttpServletRequest req = (HttpServletRequest) request;
-
 		HttpServletResponse res = (HttpServletResponse) response;
 
-		if (RequestMethod.OPTIONS.name().equals(req.getMethod())) {
-			filterchain.doFilter(req, res);
+		if (req.getMethod().equals(RequestMethod.OPTIONS.name())) {
+           filterchain.doFilter(req, res);
 			return;
-		}
 
-		try {
-			if (isTokenValid(req)) {
-				UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
-				SecurityContextHolder.getContext().setAuthentication(authentication);
-			} else {
+		} else {
+
+			try {
+				if (isTokenValid(req)) {
+					UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				} else {
+					setError(res);
+					return;
+				}
+
+			} catch (Exception ex) {
+
 				setError(res);
 				return;
+
 			}
-
-		} catch (Exception ex) {
-
-			setError(res);
-			return;
-
+			filterchain.doFilter(req, res);
 		}
-
-		filterchain.doFilter(req, res);
 	}
 
 	private void setError(HttpServletResponse res) throws IOException {

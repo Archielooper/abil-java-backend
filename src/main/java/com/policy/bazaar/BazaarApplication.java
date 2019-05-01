@@ -8,7 +8,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.filter.CorsFilter;
 
+import com.policy.bazaar.security.CorsFilter1;
 import com.policy.bazaar.security.CustomerAuthorizationFilter;
 import com.policy.bazaar.security.EmployeeAuthorizationFilter;
 
@@ -66,6 +69,22 @@ public class BazaarApplication {
 	@Bean(name = "employeeAuthorizationFilterBean")
 	public EmployeeAuthorizationFilter getEmployeeAuthorizationFilter() {
 		return new EmployeeAuthorizationFilter();
+	}
+	
+	@Bean
+	public FilterRegistrationBean<CorsFilter1> corsAuthorizationFilterRegistration() {
+
+		FilterRegistrationBean<CorsFilter1> registration = new FilterRegistrationBean<>();
+		registration.setFilter(corsAuthorizationFilter());
+		registration.addUrlPatterns("*");
+		registration.setName("corsAuthorizationFilter");
+		registration.setOrder(1);
+		return registration;
+	}
+
+	@Bean(name = "corsAuthorizationFilterBean")
+	public CorsFilter1 corsAuthorizationFilter() {
+		return new CorsFilter1();
 	}
 
 }

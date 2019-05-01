@@ -1,13 +1,10 @@
 package com.policy.bazaar.employee.controller;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,15 +26,13 @@ import com.policy.bazaar.globalresponse.GlobalResponse;
 
 @RestController
 @RequestMapping("/employee")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class EmployeeController {
 
 	@Autowired
 	EmployeeService empService;
 
 	@PostMapping("/createEmployee")
-	public GlobalResponse createEmployee(HttpServletRequest requestSS,
-			@Valid @RequestBody EmployeeCreateRequest empDetails) {
+	public GlobalResponse createEmployee(@Valid @RequestBody EmployeeCreateRequest empDetails) {
 
 		GlobalResponse globalResponse = new GlobalResponse();
 
@@ -69,16 +64,16 @@ public class EmployeeController {
 
 	}
 
-	@GetMapping("/getEmployees/{page}/{size}")
-	public GlobalResponse getEmployees(@PageableDefault(page = 0, size = 2, sort = "empid", direction = Direction.ASC) Pageable pageable) {
+	@GetMapping("/getEmployees/{page}")
+	public GlobalResponse getEmployees(@PathVariable Short page) {
 
-		return empService.getEmployees(pageable);
+		return empService.getEmployees(page);
 	}
 
-	@GetMapping("/getCustomers/")
-	public GlobalResponse getCustomers(@PageableDefault(value = 3, page = 0) Pageable pageable) {
+	@GetMapping("/getCustomers/{page}")
+	public GlobalResponse getCustomers(@PathVariable Short page) {
 
-		return empService.getCustomers(pageable);
+		return empService.getCustomers(page);
 
 	}
 
@@ -103,10 +98,10 @@ public class EmployeeController {
 
 	}
 
-	@GetMapping("/viewallpurchasedpolicies/")
-	public GlobalResponse viewAllPurchased(@PageableDefault(value = 3, page = 0) Pageable pageable) {
+	@GetMapping("/viewallpurchasedpolicies/{page}")
+	public GlobalResponse viewAllPurchased(@PathVariable Short page) {
 
-		return empService.viewAllPurchased(pageable);
+		return empService.viewAllPurchased(page);
 	}
 
 	@PutMapping("/updateStatus")

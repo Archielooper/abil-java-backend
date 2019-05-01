@@ -13,9 +13,11 @@ spring:
   batch:
     initialize-schema: ALWAYS
   datasource:
-    url: jdbc:postgresql://localhost:5432/policybazar
+    url: jdbc:postgresql://localhost:5432/policyapp
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
+  mvc:
+      dispatch-options-request: true
 server:
   port: 9090

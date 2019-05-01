@@ -10,7 +10,9 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -121,7 +123,7 @@ public class EmployeeService {
 			response1.setAuth(true);
 			response1.setUserType(empUserType);
 			if (password.equals(userPassword)) {
-				response.setData(JWTEmployeeToken.createJWT(2000000000L, findByEmail));
+				response.setData(JWTEmployeeToken.createJWT(2000000L, findByEmail));
 				response.setStatus(true);
 				response.setMessage("Authenticated!!!!!");
 			} else {
@@ -188,9 +190,9 @@ public class EmployeeService {
 		return globalResponse;
 	}
 
-	public GlobalResponse getEmployees(Pageable pageable) {
+	public GlobalResponse getEmployees(Short page) {
 
-		Page<Employees> employees = empRepository.findAll(pageable);
+		Page<Employees> employees = empRepository.findAll(PageRequest.of(page - 1, 10, Sort.by("createdon").descending()));
 
 		List<EmployeeResponse> employeeResponse = new ArrayList<EmployeeResponse>();
 		GlobalResponse globalResponse = new GlobalResponse();
@@ -212,13 +214,13 @@ public class EmployeeService {
 		return globalResponse;
 	}
 
-	public GlobalResponse getCustomers(Pageable pageable) {
+	public GlobalResponse getCustomers(Short page) {
 
-		Page<Purchasedpolicies> page = purchasedPoliciesRepository.findAll(pageable);
+		Page<Purchasedpolicies> customers = purchasedPoliciesRepository.findAll(PageRequest.of(page - 1, 10, Sort.by("createdon").descending()));
 		GlobalResponse globalResponse = new GlobalResponse();
 		List<PurchasedPoliciesResponse> purchasedPoliciesResponses = new ArrayList<PurchasedPoliciesResponse>();
 
-		page.stream().forEach(purchasedpolicy -> {
+		customers.stream().forEach(purchasedpolicy -> {
 
 			Optional<Customers> customerOpt = customerRepository.findById(purchasedpolicy.getCid());
 			Optional<Policies> customerpolicyOpt = policyRepository.findById(purchasedpolicy.getPid());
@@ -328,11 +330,11 @@ public class EmployeeService {
 		return globalResponse;
 	}
 
-	public GlobalResponse viewAllPurchased(Pageable pageable) {
+	public GlobalResponse viewAllPurchased(Short page) {
 
 		GlobalResponse globalResponse = new GlobalResponse();
 
-		Page<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findAll(pageable);
+		Page<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findAll(PageRequest.of(page - 1, 10, Sort.by("createdon").descending()));
 		List<ViewPurchasedPoliciesResponse> viewPurchasedPoliciesResponses = new ArrayList<ViewPurchasedPoliciesResponse>();
 
 		purchasedpolicies.stream().forEach((i) -> {
