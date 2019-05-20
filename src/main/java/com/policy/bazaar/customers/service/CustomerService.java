@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.policy.bazaar.claims.model.Claims;
 import com.policy.bazaar.common.exception.PolicyBazaarServiceException;
 import com.policy.bazaar.communication.MessageService;
 import com.policy.bazaar.customers.model.Customers;
@@ -19,10 +20,12 @@ import com.policy.bazaar.customers.request.CustomerSignUpRequest;
 import com.policy.bazaar.customers.response.CustomerNewPoliciesResponse;
 import com.policy.bazaar.customers.response.CustomerProfileResponse;
 import com.policy.bazaar.customers.response.CustomerPurchasedPoliciesResponse;
+import com.policy.bazaar.customers.response.GetAllCountResponse;
 import com.policy.bazaar.encryption.AES256Encryption;
 import com.policy.bazaar.globalresponse.GlobalResponse;
 import com.policy.bazaar.policy.model.Policies;
 import com.policy.bazaar.policy.model.Purchasedpolicies;
+import com.policy.bazaar.repository.ClaimsRepository;
 import com.policy.bazaar.repository.CustomerRepository;
 import com.policy.bazaar.repository.PoliciesRepository;
 import com.policy.bazaar.repository.PurchasedPoliciesRepository;
@@ -43,6 +46,9 @@ public class CustomerService {
 
 	@Autowired
 	MessageService messageService;
+
+	@Autowired
+	ClaimsRepository claimsRepository;
 
 	public GlobalResponse signup(CustomerSignUpRequest customerRequest) {
 
@@ -161,13 +167,14 @@ public class CustomerService {
 				customerPurchasedPolicies.setStartdate(i.getStartdate());
 				customerPurchasedPolicies.setAmount(policy.getAmount());
 				customerPurchasedPolicies.setPid(policy.getPid());
+				customerPurchasedPolicies.setStatus(i.getStatus());
 
 				custPurchasedPolicies.add(customerPurchasedPolicies);
 
-				globalResponse.setData(custPurchasedPolicies);
-				globalResponse.setStatus(true);
-				globalResponse.setMessage("Purchased Policies");
 			});
+			globalResponse.setData(custPurchasedPolicies);
+			globalResponse.setStatus(true);
+			globalResponse.setMessage("Purchased Policies");
 
 		}
 		return globalResponse;
@@ -196,6 +203,7 @@ public class CustomerService {
 				if (!listOfpurchasedpoliciesPids.contains(policy.getPid())) {
 
 					CustomerNewPoliciesResponse customerNewPoliciesResponse = new CustomerNewPoliciesResponse();
+					customerNewPoliciesResponse.setPid(policy.getPid());
 					customerNewPoliciesResponse.setPolicyname(policy.getPolicyname());
 					customerNewPoliciesResponse.setDescription(policy.getDescription());
 					customerNewPoliciesResponse.setAmount(policy.getAmount());
@@ -221,7 +229,7 @@ public class CustomerService {
 		Purchasedpolicies purchasedpolicies = new Purchasedpolicies();
 		purchasedpolicies.setPid(request.getPid());
 		purchasedpolicies.setCid(request.getCid());
-		purchasedpolicies.setStatus(1);
+		purchasedpolicies.setStatus(0);
 		purchasedpolicies.setStartdate(new Date());
 		purchasedpolicies.setEnddate(cal.getTime());
 		purchasedpolicies.setCreatedon(new Date());
@@ -231,6 +239,28 @@ public class CustomerService {
 		globalResponse.setData(null);
 		globalResponse.setStatus(true);
 		globalResponse.setMessage("Policy Added!!!");
+		return globalResponse;
+	}
+
+	public GlobalResponse getClaimsCount(Integer cid) {
+		GlobalResponse globalResponse = new GlobalResponse();
+		List<Claims> claims = claimsRepository.findByCid(cid);
+		List<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findByCid(cid);
+		long totalPoliciesCount = purchasedpolicies.stream().count();
+		long totalClaimsCount = claims.stream().count();
+
+		long approvedClaimscount = claims.stream().filter(claim -> claim.getStatus() == 1).count();
+		long approvedPoliciesCount = purchasedpolicies.stream().filter(purchasedpolicy -> purchasedpolicy.getStatus() == 1).count();
+
+		GetAllCountResponse getClaimsCountResponse = new GetAllCountResponse();
+
+		getClaimsCountResponse.setApprovedPolicesCount(approvedPoliciesCount);
+		getClaimsCountResponse.setTotalPoliciesCount(totalPoliciesCount);
+		getClaimsCountResponse.setTotalClaimsCount(totalClaimsCount);
+		getClaimsCountResponse.setApprovedClaimsCount(approvedClaimscount);
+		globalResponse.setData(getClaimsCountResponse);
+		globalResponse.setMessage("My Total count!!!");
+		globalResponse.setStatus(true);
 		return globalResponse;
 	}
 

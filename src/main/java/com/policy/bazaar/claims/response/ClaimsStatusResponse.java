@@ -1,19 +1,21 @@
-package com.policy.bazaar.customers.response;
+package com.policy.bazaar.claims.response;
 
-public class CustomerNewPoliciesResponse {
+import java.util.Date;
 
-	private Integer pid;
+public class ClaimsStatusResponse {
+
+	private Integer claimid;
 	private String policyname;
-	private String description;
+	private Date adddate;
 	private Integer amount;
 	private Integer status;
 
-	public Integer getPid() {
-		return pid;
+	public Integer getClaimid() {
+		return claimid;
 	}
 
-	public void setPid(Integer pid) {
-		this.pid = pid;
+	public void setClaimid(Integer claimid) {
+		this.claimid = claimid;
 	}
 
 	public String getPolicyname() {
@@ -24,12 +26,12 @@ public class CustomerNewPoliciesResponse {
 		this.policyname = policyname;
 	}
 
-	public String getDescription() {
-		return description;
+	public Date getAdddate() {
+		return adddate;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setAdddate(Date adddate) {
+		this.adddate = adddate;
 	}
 
 	public Integer getAmount() {
@@ -47,7 +49,5 @@ public class CustomerNewPoliciesResponse {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-	
-	
 
 }

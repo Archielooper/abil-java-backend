@@ -50,7 +50,6 @@ public class CustomerController {
 
 	@GetMapping("/getProfile/{cid}")
 	public GlobalResponse getProfile(HttpServletRequest request, @PathVariable Integer cid) {
-		// System.out.println(request.getAttribute("user"));
 
 		return customerService.getProfile(cid);
 
@@ -73,6 +72,11 @@ public class CustomerController {
 	public GlobalResponse addNewPolicies(@RequestBody AddNewPolicyRequest request) {
 		return customerService.addNewPolicies(request);
 
+	}
+
+	@GetMapping("/getallcount/{cid}")
+	public GlobalResponse getClaimsCount(@PathVariable Integer cid) {
+		return customerService.getClaimsCount(cid);
 	}
 
 }

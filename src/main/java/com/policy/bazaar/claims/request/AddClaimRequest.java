@@ -4,7 +4,6 @@ public class AddClaimRequest {
 
 	private Integer cid;
 	private Integer pid;
-	private Integer empid;
 	private Integer amount;
 	private Integer status;
 
@@ -22,14 +21,6 @@ public class AddClaimRequest {
 
 	public void setPid(Integer pid) {
 		this.pid = pid;
-	}
-
-	public Integer getEmpid() {
-		return empid;
-	}
-
-	public void setEmpid(Integer empid) {
-		this.empid = empid;
 	}
 
 	public Integer getAmount() {
@@ -50,7 +41,7 @@ public class AddClaimRequest {
 
 	@Override
 	public String toString() {
-		return "AddClaimRequest [cid=" + cid + ", pid=" + pid + ", empid=" + empid + ", amount=" + amount + ", status="
+		return "AddClaimRequest [cid=" + cid + ", pid=" + pid + ", amount=" + amount + ", status="
 				+ status + "]";
 	}
 

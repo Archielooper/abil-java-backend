@@ -25,7 +25,6 @@ import com.policy.bazaar.globalresponse.GlobalResponse;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-
 public class CustomerSignInTest {
 
 	@Autowired

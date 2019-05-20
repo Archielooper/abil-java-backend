@@ -3,8 +3,6 @@ package com.policy.bazaar.policy.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,9 +32,9 @@ public class PolicyController {
 		return policyService.createPolicy(policyDetails);
 	}
 
-	@GetMapping("/getPolicies/")
-	public GlobalResponse getPolicies(@PageableDefault(value = 3, page = 0) Pageable pageable) {
-		return policyService.getPolicies(pageable);
+	@GetMapping("/getPolicies/{page}")
+	public GlobalResponse getPolicies(@PathVariable Short page) {
+		return policyService.getPolicies(page);
 
 	}
 

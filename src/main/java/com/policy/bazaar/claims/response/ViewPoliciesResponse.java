@@ -7,6 +7,15 @@ public class ViewPoliciesResponse {
 	private String PolicyName;
 	private Integer amount;
 	private Integer claimid;
+	private Integer status;
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
 
 	public String getCustomerFirstName() {
 		return CustomerFirstName;
