@@ -39,9 +39,9 @@ public class ClaimsController {
 		return claimservice.viewAllClaims(page);
 	}
 
-	@GetMapping("/get/{id}")
-	public GlobalResponse getClaimsById(@PathVariable Integer id) {
-		return claimservice.getClaimById(id);
+	@GetMapping("/get/{id}/{page}")
+	public GlobalResponse getClaimsById(@PathVariable Integer id, @PathVariable Short page) {
+		return claimservice.getClaimById(id , page);
 	}
 
 }

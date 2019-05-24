@@ -10,5 +10,7 @@ public interface CustomerRepository extends JpaRepository<Customers, Integer>
 {
 
 	Customers findByEmail(String email);
+	Customers findByCid(Integer cid);
+	
 
 }

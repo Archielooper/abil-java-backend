@@ -1,12 +1,12 @@
-package com.policy.bazaar.customers.response;
+package com.policy.bazaar.customers.request;
 
-public class CustomerProfileResponse {
+public class UpdateCustomerProfileRequest {
 
 	private String firstname;
 	private String lastname;
 	private String email;
 	private String mobile;
-	private String Address;
+	private String address;
 
 	public String getFirstname() {
 		return firstname;
@@ -41,11 +41,11 @@ public class CustomerProfileResponse {
 	}
 
 	public String getAddress() {
-		return Address;
+		return address;
 	}
 
 	public void setAddress(String address) {
-		Address = address;
+		this.address = address;
 	}
 
 }

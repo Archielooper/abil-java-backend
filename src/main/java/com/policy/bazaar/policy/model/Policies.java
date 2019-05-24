@@ -24,13 +24,14 @@ public class Policies {
 	private String policyname;
 
 	@NotNull
-	@Size(min = 2, max = 30, message = "{validation.description.size}")
+	@Size(min = 2, max = 300, message = "{validation.description.size}")
 	private String description;
 
 	@NotNull(message = "{validation.amount.notnull}")
 	@Min(value = 10000, message = "{validation.amount.min}")
 	@Max(value = 10000000, message = "{validation.amount.max}")
 	private Integer amount;
+	private Integer tenure;
 	private Date createdon;
 	private Date lastupdatedon;
 
@@ -56,6 +57,14 @@ public class Policies {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Integer getTenure() {
+		return tenure;
+	}
+
+	public void setTenure(Integer tenure) {
+		this.tenure = tenure;
 	}
 
 	public Integer getAmount() {

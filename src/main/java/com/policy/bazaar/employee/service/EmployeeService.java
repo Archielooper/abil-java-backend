@@ -17,7 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.policy.bazaar.common.exception.NotFoundException;
 import com.policy.bazaar.common.exception.PolicyBazaarServiceException;
-import com.policy.bazaar.communication.SendEmail;
+import com.policy.bazaar.communication.SendEmailForChangePassword;
+import com.policy.bazaar.communication.SendEmailForStatus;
 import com.policy.bazaar.customers.model.Customers;
 import com.policy.bazaar.customers.response.CustomerProfileResponse;
 import com.policy.bazaar.employee.model.Employees;
@@ -26,13 +27,15 @@ import com.policy.bazaar.employee.request.EmployeeLoginRequest;
 import com.policy.bazaar.employee.request.EmployeeRequest;
 import com.policy.bazaar.employee.request.EmployeeUpdatePasswordRequest;
 import com.policy.bazaar.employee.request.EmployeeUpdateRequest;
-import com.policy.bazaar.employee.request.updateStatusRequest;
+import com.policy.bazaar.employee.request.UpdateEmpStatusRequest;
+import com.policy.bazaar.employee.request.UpdateStatusRequest;
 import com.policy.bazaar.employee.response.AllCountResponse;
 import com.policy.bazaar.employee.response.EmployeeCreateResponse;
 import com.policy.bazaar.employee.response.EmployeeResponse;
 import com.policy.bazaar.employee.response.Employeepasswords;
 import com.policy.bazaar.employee.response.ViewPurchasedPoliciesResponse;
 import com.policy.bazaar.encryption.AES256Encryption;
+import com.policy.bazaar.globalresponse.GlobalPaginationResponse;
 import com.policy.bazaar.globalresponse.GlobalResponse;
 import com.policy.bazaar.globalresponse.Response;
 import com.policy.bazaar.policy.model.Policies;
@@ -63,13 +66,21 @@ public class EmployeeService {
 	CustomerRepository customerRepository;
 
 	@Autowired
-	SendEmail email;
+	SendEmailForChangePassword email;
 
 	@Autowired
 	PoliciesRepository policyRepository;
-	
+
 	@Autowired
-	ClaimsRepository claimsRepository; 
+	ClaimsRepository claimsRepository;
+
+	@Autowired
+	SendEmailForStatus sendEmailForStatus;
+
+	@Autowired
+	GlobalPaginationResponse globalPaginationResponse;
+
+	private final String status[] = { "PENDING", "APPROVED", "REJECTED" };
 
 	public GlobalResponse createEmployee(@Valid EmployeeCreateRequest empDetails) {
 		Employees emp = new Employees();
@@ -91,6 +102,7 @@ public class EmployeeService {
 				emp.setMobile(empDetails.getMobile());
 				emp.setCreatedon(new Date(System.currentTimeMillis()));
 				emp.setUsertype(empDetails.getUsertype());
+				emp.setStatus(0);
 				empRepository.save(emp);
 				emppass.setUuid(uuid);
 				emppass.setEmpId(emp.getEmpid());
@@ -119,7 +131,13 @@ public class EmployeeService {
 			response.setStatus(false);
 			response.setMessage("Email or Password not valid");
 		} else {
-
+                 
+			if(findByEmail.getStatus() != 1) {
+				response.setData(null);
+				response.setStatus(false);
+				response.setMessage("Not an Active user!!!!!!!");
+				
+			} else {
 			String password = findByEmail.getPassword();
 			String userPassword = AES256Encryption.encrypt(empLogin.getPassword(), AES256Encryption.secretKey);
 			Byte empUserType = findByEmail.getUsertype();
@@ -127,14 +145,17 @@ public class EmployeeService {
 			Response response1 = new Response();
 			response1.setAuth(true);
 			response1.setUserType(empUserType);
+			
 			if (password.equals(userPassword)) {
-				response.setData(JWTEmployeeToken.createJWT(2000000L, findByEmail));
+				response.setData(JWTEmployeeToken.createJWT(20000000L, findByEmail));
 				response.setStatus(true);
 				response.setMessage("Authenticated!!!!!");
-			} else {
+			}
+			else {
 				response.setData(null);
 				response.setStatus(false);
 				response.setMessage("Email or Password not valid");
+			}
 			}
 		}
 		return response;
@@ -160,6 +181,7 @@ public class EmployeeService {
 				empPassword.setPassword(encryptedString);
 				empPassword.setStatus(false);
 				emp.setPassword(encryptedString);
+				emp.setStatus(1);
 				empPasswordRepository.save(empPassword);
 				empRepository.save(emp);
 				response.setData(null);
@@ -200,6 +222,7 @@ public class EmployeeService {
 
 		Page<Employees> employees = empRepository
 				.findAll(PageRequest.of(page - 1, 10, Sort.by("createdon").descending()));
+		long count = employees.stream().count();
 
 		List<EmployeeResponse> employeeResponse = new ArrayList<EmployeeResponse>();
 		GlobalResponse globalResponse = new GlobalResponse();
@@ -211,12 +234,17 @@ public class EmployeeService {
 			empResponse.setEmail(i.getEmail());
 			empResponse.setMobile(i.getMobile());
 			empResponse.setUserType(i.getUsertype());
+			empResponse.setStatus(i.getStatus());
+			empResponse.setEmpId(i.getEmpid());
 			employeeResponse.add(empResponse);
-			globalResponse.setData(employeeResponse);
-			globalResponse.setStatus(true);
-			globalResponse.setMessage("Authorized!!!!");
-
+			
 		});
+		globalPaginationResponse.setList(employeeResponse);
+		globalPaginationResponse.setCount(count);
+		globalResponse.setData(globalPaginationResponse);
+		globalResponse.setStatus(true);
+		globalResponse.setMessage("Authorized!!!!");
+
 
 		return globalResponse;
 	}
@@ -225,7 +253,10 @@ public class EmployeeService {
 
 		Page<Customers> customers = customerRepository
 				.findAll(PageRequest.of(page - 1, 10, Sort.by("createdon").descending()));
+
+		long count = customerRepository.count();
 		GlobalResponse globalResponse = new GlobalResponse();
+
 		List<CustomerProfileResponse> customerProfileResponses = new ArrayList<CustomerProfileResponse>();
 
 		customers.stream().forEach(customer -> {
@@ -235,11 +266,14 @@ public class EmployeeService {
 			customerResponse.setLastname(customer.getLastname());
 			customerResponse.setEmail(customer.getEmail());
 			customerResponse.setMobile(customer.getMobile());
+			customerResponse.setAddress(customer.getAddress());
 			customerProfileResponses.add(customerResponse);
 
 		});
 
-		globalResponse.setData(customerProfileResponses);
+		globalPaginationResponse.setList(customerProfileResponses);
+		globalPaginationResponse.setCount(count);
+		globalResponse.setData(globalPaginationResponse);
 		globalResponse.setStatus(true);
 		globalResponse.setMessage("Authorized!!!!");
 
@@ -311,20 +345,25 @@ public class EmployeeService {
 		return globalResponse;
 	}
 
+	@SuppressWarnings("null")
 	public GlobalResponse deleteEmployee(Integer empId) {
 
-		Optional<Employees> employee = empRepository.findById(empId);
+		Employees employee = empRepository.findById(empId).get();
 		GlobalResponse globalResponse = new GlobalResponse();
+		
 
-		if (!employee.isPresent()) {
-
-			throw new NotFoundException("Employee with id- " + empId + " not found!!!");
+		if (employee == null && employee.getStatus() != 0) {
+			
+			globalResponse.setData(null);
+			globalResponse.setStatus(false);
+			globalResponse.setMessage("Not Allowed!!!!!");
 		} else {
-
+            
 			empRepository.deleteById(empId);
 			globalResponse.setData(null);
 			globalResponse.setStatus(true);
-			globalResponse.setMessage("Employee deleted successfully!!!!");
+			globalResponse.setMessage("Deleted Successfully!!!!!");
+			
 		}
 
 		return globalResponse;
@@ -336,16 +375,14 @@ public class EmployeeService {
 
 		Page<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository
 				.findAll(PageRequest.of(page - 1, 10, Sort.by("createdon").descending()));
+		long count = purchasedPoliciesRepository.count();
 		List<ViewPurchasedPoliciesResponse> viewPurchasedPoliciesResponses = new ArrayList<ViewPurchasedPoliciesResponse>();
 
 		purchasedpolicies.stream().forEach((i) -> {
 			ViewPurchasedPoliciesResponse viewPurchasedPoliciesResponse = new ViewPurchasedPoliciesResponse();
 
-			Optional<Customers> customers = customerRepository.findById(i.getCid());
-			Optional<Policies> policies = policyRepository.findById(i.getPid());
-
-			Customers customer = customers.get();
-			Policies policy = policies.get();
+			Customers customer = customerRepository.findById(i.getCid()).get();
+			Policies policy = policyRepository.findById(i.getPid()).get();
 
 			viewPurchasedPoliciesResponse.setCustomerFullName(customer.getFirstname());
 			viewPurchasedPoliciesResponse.setCustomerLastName(customer.getLastname());
@@ -357,24 +394,29 @@ public class EmployeeService {
 
 		});
 
-		globalResponse.setData(viewPurchasedPoliciesResponses);
+		globalPaginationResponse.setList(viewPurchasedPoliciesResponses);
+		globalPaginationResponse.setCount(count);
+		globalResponse.setData(globalPaginationResponse);
 		globalResponse.setStatus(true);
 		globalResponse.setMessage("All Purchased Policies");
 
 		return globalResponse;
 	}
 
-	public GlobalResponse updateStatus(updateStatusRequest updateRequest) {
+	public GlobalResponse updateStatus(UpdateStatusRequest updateRequest) throws Exception {
 
 		GlobalResponse globalResponse = new GlobalResponse();
 
-		Optional<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository
-				.findById(updateRequest.getPurchasedid());
+		Purchasedpolicies purchasedpolicy = purchasedPoliciesRepository.findById(updateRequest.getPurchasedid()).get();
 
-		Purchasedpolicies purchasedpolicy = purchasedpolicies.get();
+		Customers customer = customerRepository.findById(purchasedpolicy.getCid()).get();
 
 		purchasedpolicy.setStatus(updateRequest.getStatus());
+
 		purchasedPoliciesRepository.save(purchasedpolicy);
+
+		sendEmailForStatus.sendEmail(customer.getEmail(), customer.getFirstname() + " " + customer.getLastname(),
+				status[updateRequest.getStatus()]);
 
 		globalResponse.setData(null);
 		globalResponse.setStatus(true);
@@ -383,11 +425,12 @@ public class EmployeeService {
 		return globalResponse;
 	}
 
-	public GlobalResponse allPurchasedPolicies() {
+	public GlobalResponse allPurchasedPolicies(Short page) {
 
 		GlobalResponse globalResponse = new GlobalResponse();
 
-		List<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findAll();
+		Page<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findAll(PageRequest.of(page - 1, 10, Sort.by("createdon").descending()));
+		long count = purchasedPoliciesRepository.count();
 
 		List<PurchasedPoliciesResponse> purchasedPoliciesResponsesList = new ArrayList<PurchasedPoliciesResponse>();
 
@@ -405,8 +448,9 @@ public class EmployeeService {
 			purchasedPoliciesResponse.setPurchasedId(purchasedpolicy.getPurchasedid());
 			purchasedPoliciesResponsesList.add(purchasedPoliciesResponse);
 		});
-
-		globalResponse.setData(purchasedPoliciesResponsesList);
+		globalPaginationResponse.setList(purchasedPoliciesResponsesList);
+		globalPaginationResponse.setCount(count);
+		globalResponse.setData(globalPaginationResponse);
 		globalResponse.setMessage("All Purchased Policies!!!!!");
 		globalResponse.setStatus(true);
 
@@ -427,10 +471,9 @@ public class EmployeeService {
 				.filter(purchasedPolicy -> purchasedPolicy.getStatus() == 1).count();
 		Long totalRejectedPolicies = purchasedpolicies.stream()
 				.filter(purchasedPolicy -> purchasedPolicy.getStatus() == 2).count();
-		System.out.println("Total Approved Policies ---->>> "+totalApprovedPolicies + "Total Rejected Policies------>>>>" +totalRejectedPolicies);
 
 		AllCountResponse allCountResponse = new AllCountResponse();
-        
+
 		allCountResponse.setTotalEmployeesCount(totalEmployeesCount);
 		allCountResponse.setTotalClaimCount(totalClaimsCount);
 		allCountResponse.setTotalCustomerCount(totalCustomerCount);
@@ -441,6 +484,22 @@ public class EmployeeService {
 
 		globalResponse.setData(allCountResponse);
 		globalResponse.setMessage("All Count");
+		globalResponse.setStatus(true);
+		return globalResponse;
+	}
+
+	public GlobalResponse updateEmpStatus(UpdateEmpStatusRequest updateEmpStatus) {
+		
+		GlobalResponse globalResponse = new GlobalResponse();
+		
+		Employees employee = empRepository.findById(updateEmpStatus.getEmpId()).get();
+		
+		employee.setStatus(updateEmpStatus.getStatus());
+		employee.setLastupdatedon(new Date());
+		empRepository.save(employee);
+		
+		globalResponse.setData(null);
+		globalResponse.setMessage("Status Updated..");
 		globalResponse.setStatus(true);
 		return globalResponse;
 	}

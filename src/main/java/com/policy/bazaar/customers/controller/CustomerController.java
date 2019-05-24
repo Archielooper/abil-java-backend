@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.policy.bazaar.customers.request.AddNewPolicyRequest;
 import com.policy.bazaar.customers.request.CustomerSignInRequest;
 import com.policy.bazaar.customers.request.CustomerSignUpRequest;
+import com.policy.bazaar.customers.request.UpdateCustomerPasswordRequest;
+import com.policy.bazaar.customers.request.UpdateCustomerProfileRequest;
 import com.policy.bazaar.customers.service.CustomerService;
 import com.policy.bazaar.globalresponse.GlobalResponse;
 
@@ -55,16 +58,16 @@ public class CustomerController {
 
 	}
 
-	@GetMapping("/getpurchasedpolicies/{cid}")
-	public GlobalResponse getPurchasedPolicies(@PathVariable Integer cid) {
-		return customerService.getPurchasedPolicies(cid);
+	@GetMapping("/getpurchasedpolicies/{cid}/{page}")
+	public GlobalResponse getPurchasedPolicies(@PathVariable Integer cid,@PathVariable Short page) {
+		return customerService.getPurchasedPolicies(cid,page);
 
 	}
 
-	@GetMapping("/getnewpolicies/{cid}")
-	public GlobalResponse getNewPolicies(@PathVariable Integer cid) {
+	@GetMapping("/getnewpolicies/{cid}/{page}")
+	public GlobalResponse getNewPolicies(@PathVariable Integer cid , @PathVariable Short page) {
 
-		return customerService.getNewPolicies(cid);
+		return customerService.getNewPolicies(cid,page);
 
 	}
 
@@ -77,6 +80,17 @@ public class CustomerController {
 	@GetMapping("/getallcount/{cid}")
 	public GlobalResponse getClaimsCount(@PathVariable Integer cid) {
 		return customerService.getClaimsCount(cid);
+	}
+	
+	@PutMapping("/updatepassword/{cid}")
+	public GlobalResponse updatePassword(@PathVariable Integer cid ,@RequestBody UpdateCustomerPasswordRequest updatePasswordRequest) {
+		return customerService.updateCustomerPassword(cid,updatePasswordRequest);
+		
+	}
+	
+	@PutMapping("/updatecustomerprofile/{cid}")
+	public GlobalResponse updateProfile(@PathVariable Integer cid, @RequestBody UpdateCustomerProfileRequest updateProfileRequest) {
+		return customerService.updateCustomerProfile(cid,updateProfileRequest);
 	}
 
 }

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.policy.bazaar.common.exception.NotFoundException;
+import com.policy.bazaar.globalresponse.GlobalPaginationResponse;
 import com.policy.bazaar.globalresponse.GlobalResponse;
 import com.policy.bazaar.policy.model.Policies;
 import com.policy.bazaar.policy.request.CreatePolicyRequest;
@@ -24,6 +25,9 @@ public class PolicyService {
 
 	@Autowired
 	PoliciesRepository policyRepository;
+	
+	@Autowired
+	GlobalPaginationResponse globalPaginationResponse;
 
 	public GlobalResponse createPolicy(CreatePolicyRequest policyDetails) {
 
@@ -35,6 +39,7 @@ public class PolicyService {
 		policies.setDescription(policyDetails.getDescription());
 		policies.setAmount(policyDetails.getAmount());
 		policies.setCreatedon(new Date(System.currentTimeMillis()));
+		policies.setTenure(policyDetails.getTenure());
 		policyRepository.save(policies);
 
 		response.setData(null);
@@ -46,12 +51,10 @@ public class PolicyService {
 
 	public GlobalResponse getPolicies(Short page) {
 
-		Page<Policies> policies = policyRepository.findAll(PageRequest.of(page - 1, 10, Sort.by("createdon").descending()));
-
+		Page<Policies> policies = policyRepository.findAll(PageRequest.of(page - 1, 5, Sort.by("createdon").descending()));
+		long count = policyRepository.count();
 		
-	//	List<Policies> policies = policyRepository.findByPurchasedFindAll();
-		
-		List<GetPoliciesResponse> getPoList = new ArrayList<GetPoliciesResponse>();
+		List<GetPoliciesResponse> getPolicyList = new ArrayList<GetPoliciesResponse>();
 		GlobalResponse globalResponse = new GlobalResponse();
 		policies.stream().forEach((i) -> {
 
@@ -60,9 +63,13 @@ public class PolicyService {
 			getPoliciesResponse.setPolicyname(i.getPolicyname());
 			getPoliciesResponse.setAmount(i.getAmount());
 			getPoliciesResponse.setDescription(i.getDescription());
-			getPoList.add(getPoliciesResponse);
+			getPoliciesResponse.setTenure(i.getTenure());
+			getPolicyList.add(getPoliciesResponse);
+			
+			globalPaginationResponse.setList(getPolicyList);
+			globalPaginationResponse.setCount(count);
 
-			globalResponse.setData(getPoList);
+			globalResponse.setData(globalPaginationResponse);
 			globalResponse.setStatus(true);
 			globalResponse.setMessage("Authorized!!!!");
 

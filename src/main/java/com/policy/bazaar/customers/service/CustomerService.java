@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +20,14 @@ import com.policy.bazaar.customers.model.Customers;
 import com.policy.bazaar.customers.request.AddNewPolicyRequest;
 import com.policy.bazaar.customers.request.CustomerSignInRequest;
 import com.policy.bazaar.customers.request.CustomerSignUpRequest;
+import com.policy.bazaar.customers.request.UpdateCustomerPasswordRequest;
+import com.policy.bazaar.customers.request.UpdateCustomerProfileRequest;
 import com.policy.bazaar.customers.response.CustomerNewPoliciesResponse;
 import com.policy.bazaar.customers.response.CustomerProfileResponse;
 import com.policy.bazaar.customers.response.CustomerPurchasedPoliciesResponse;
 import com.policy.bazaar.customers.response.GetAllCountResponse;
 import com.policy.bazaar.encryption.AES256Encryption;
+import com.policy.bazaar.globalresponse.GlobalPaginationResponse;
 import com.policy.bazaar.globalresponse.GlobalResponse;
 import com.policy.bazaar.policy.model.Policies;
 import com.policy.bazaar.policy.model.Purchasedpolicies;
@@ -49,6 +55,9 @@ public class CustomerService {
 
 	@Autowired
 	ClaimsRepository claimsRepository;
+
+	@Autowired
+	GlobalPaginationResponse globalPaginationResponse;
 
 	public GlobalResponse signup(CustomerSignUpRequest customerRequest) {
 
@@ -128,11 +137,18 @@ public class CustomerService {
 			globalResponse.setMessage("Customer with the id-" + cid + " not found!!!!");
 			globalResponse.setStatus(false);
 		} else {
+			
 			Customers custom = customer.get();
 			customerResponse.setFirstname(custom.getFirstname());
 			customerResponse.setLastname(custom.getLastname());
 			customerResponse.setMobile(custom.getMobile());
 			customerResponse.setEmail(custom.getEmail());
+			
+			if(custom.getAddress().equals(null)) {
+				customerResponse.setAddress("Please enter your complete address...");
+			}else {
+				customerResponse.setAddress(custom.getAddress());
+			}
 			globalResponse.setData(customerResponse);
 			globalResponse.setStatus(true);
 			globalResponse.setMessage("User Found!!!!");
@@ -141,7 +157,7 @@ public class CustomerService {
 		return globalResponse;
 	}
 
-	public GlobalResponse getPurchasedPolicies(Integer cid) {
+	public GlobalResponse getPurchasedPolicies(Integer cid, Short page) {
 
 		GlobalResponse globalResponse = new GlobalResponse();
 
@@ -154,8 +170,11 @@ public class CustomerService {
 
 		} else {
 
-			List<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findByCid(cid);
+			Page<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findByCid(cid,
+					PageRequest.of(page - 1, 10, Sort.by("createdon").descending()));
 			List<CustomerPurchasedPoliciesResponse> custPurchasedPolicies = new ArrayList<CustomerPurchasedPoliciesResponse>();
+
+			long count = purchasedpolicies.stream().count();
 
 			purchasedpolicies.stream().forEach(i -> {
 
@@ -172,7 +191,10 @@ public class CustomerService {
 				custPurchasedPolicies.add(customerPurchasedPolicies);
 
 			});
-			globalResponse.setData(custPurchasedPolicies);
+			globalPaginationResponse.setList(custPurchasedPolicies);
+			globalPaginationResponse.setCount(count);
+
+			globalResponse.setData(globalPaginationResponse);
 			globalResponse.setStatus(true);
 			globalResponse.setMessage("Purchased Policies");
 
@@ -180,7 +202,7 @@ public class CustomerService {
 		return globalResponse;
 	}
 
-	public GlobalResponse getNewPolicies(Integer cid) {
+	public GlobalResponse getNewPolicies(Integer cid, Short page) {
 		Optional<Customers> customers = customerRepository.findById(cid);
 		GlobalResponse globalResponse = new GlobalResponse();
 		if (!customers.isPresent()) {
@@ -189,8 +211,9 @@ public class CustomerService {
 			globalResponse.setStatus(false);
 		} else {
 			List<Policies> policies = policyRepository.findAll();
-			List<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findByCid(cid);
-
+			Page<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findByCid(cid,
+					PageRequest.of(page - 1, 10, Sort.by("createdon").descending()));
+			long count = purchasedpolicies.stream().count();
 			List<Integer> listOfpurchasedpoliciesPids = new ArrayList<>();
 			purchasedpolicies.forEach(purchasedpolicy -> {
 
@@ -211,8 +234,9 @@ public class CustomerService {
 
 				}
 			});
-
-			globalResponse.setData(customerNewPoliciesResponselist);
+			globalPaginationResponse.setList(customerNewPoliciesResponselist);
+			globalPaginationResponse.setCount(count);
+			globalResponse.setData(globalPaginationResponse);
 			globalResponse.setMessage("New Policies to purchase!!!!");
 			globalResponse.setStatus(true);
 		}
@@ -250,7 +274,8 @@ public class CustomerService {
 		long totalClaimsCount = claims.stream().count();
 
 		long approvedClaimscount = claims.stream().filter(claim -> claim.getStatus() == 1).count();
-		long approvedPoliciesCount = purchasedpolicies.stream().filter(purchasedpolicy -> purchasedpolicy.getStatus() == 1).count();
+		long approvedPoliciesCount = purchasedpolicies.stream()
+				.filter(purchasedpolicy -> purchasedpolicy.getStatus() == 1 || purchasedpolicy.getStatus() == 3).count();
 
 		GetAllCountResponse getClaimsCountResponse = new GetAllCountResponse();
 
@@ -261,6 +286,66 @@ public class CustomerService {
 		globalResponse.setData(getClaimsCountResponse);
 		globalResponse.setMessage("My Total count!!!");
 		globalResponse.setStatus(true);
+		return globalResponse;
+	}
+
+	public GlobalResponse updateCustomerPassword(Integer cid, UpdateCustomerPasswordRequest updatePasswordRequest) {
+
+		GlobalResponse globalResponse = new GlobalResponse();
+		Customers customer = customerRepository.findByCid(cid);
+
+		if (customer == null) {
+			globalResponse.setData(null);
+			globalResponse.setMessage("Not Found!!!!!");
+			globalResponse.setStatus(false);
+		} else {
+			String encryptedOldPassword = AES256Encryption
+					.encrypt(updatePasswordRequest.getOldPassword(), AES256Encryption.secretKey).intern();
+
+			String password = customer.getPassword().intern();
+			if (password == encryptedOldPassword) {
+				String encryptedNewPassword = AES256Encryption.encrypt(updatePasswordRequest.getNewPassword(),
+						AES256Encryption.secretKey);
+
+				customer.setPassword(encryptedNewPassword);
+				customer.setLastupdatedon(new Date());
+				customerRepository.save(customer);
+				globalResponse.setData(null);
+				globalResponse.setMessage("Password Change Successfully!!!");
+				globalResponse.setStatus(true);
+
+			} else {
+
+				globalResponse.setData(null);
+				globalResponse.setMessage("You have entered a wrong password");
+				globalResponse.setStatus(false);
+			}
+
+		}
+
+		return globalResponse;
+	}
+
+	public GlobalResponse updateCustomerProfile(Integer cid, UpdateCustomerProfileRequest updateProfileRequest) {
+       
+		GlobalResponse globalResponse = new GlobalResponse();
+		Customers customer = customerRepository.findByCid(cid);
+		
+		if(customer == null) {
+			globalResponse.setData(null);
+			globalResponse.setMessage("Not Found!!!!!");
+			globalResponse.setStatus(false);
+		}else {
+			customer.setFirstname(updateProfileRequest.getFirstname());
+			customer.setLastname(updateProfileRequest.getLastname());
+			customer.setMobile(updateProfileRequest.getMobile());
+			customer.setAddress(updateProfileRequest.getAddress());
+			customerRepository.save(customer);
+			globalResponse.setData(null);
+			globalResponse.setMessage("Profile Updated Successfully!!!!!!!");
+			globalResponse.setStatus(true);
+		}
+		
 		return globalResponse;
 	}
 

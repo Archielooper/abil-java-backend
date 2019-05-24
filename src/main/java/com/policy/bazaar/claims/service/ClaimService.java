@@ -17,11 +17,14 @@ import com.policy.bazaar.claims.request.ChangeClaimRequest;
 import com.policy.bazaar.claims.response.ClaimsStatusResponse;
 import com.policy.bazaar.claims.response.ViewPoliciesResponse;
 import com.policy.bazaar.customers.model.Customers;
+import com.policy.bazaar.globalresponse.GlobalPaginationResponse;
 import com.policy.bazaar.globalresponse.GlobalResponse;
 import com.policy.bazaar.policy.model.Policies;
+import com.policy.bazaar.policy.model.Purchasedpolicies;
 import com.policy.bazaar.repository.ClaimsRepository;
 import com.policy.bazaar.repository.CustomerRepository;
 import com.policy.bazaar.repository.PoliciesRepository;
+import com.policy.bazaar.repository.PurchasedPoliciesRepository;
 
 @Service
 public class ClaimService {
@@ -35,6 +38,12 @@ public class ClaimService {
 	@Autowired
 	CustomerRepository customerRepository;
 
+	@Autowired
+	PurchasedPoliciesRepository purchasedPolicies;
+
+	@Autowired
+	GlobalPaginationResponse globalPaginationResponse;
+
 	public GlobalResponse addClaims(AddClaimRequest addrequest) {
 
 		GlobalResponse globalResponse = new GlobalResponse();
@@ -46,6 +55,10 @@ public class ClaimService {
 		claims.setStartdate(new Date());
 		claims.setLastupdatedon(new Date());
 
+		Purchasedpolicies policy = purchasedPolicies.findByPid(addrequest.getPid());
+
+		policy.setStatus(3);
+		purchasedPolicies.save(policy);
 		claimsRepository.save(claims);
 
 		globalResponse.setData(null);
@@ -61,20 +74,19 @@ public class ClaimService {
 		Optional<Claims> claims = claimsRepository.findById(changerequest.getClaimid());
 		Claims claim = claims.get();
 
-			claim.setStatus(changerequest.getStatus());
-			claim.setLastupdatedon(new Date());
-			claimsRepository.save(claim);
-			globalResponse.setData(null);
-			globalResponse.setMessage("Status Changed!!!");
-			globalResponse.setStatus(true);
-		
+		claim.setStatus(changerequest.getStatus());
+		claim.setLastupdatedon(new Date());
+		claimsRepository.save(claim);
+		globalResponse.setData(null);
+		globalResponse.setMessage("Status Changed!!!");
+		globalResponse.setStatus(true);
 
 		return globalResponse;
 	}
 
 	public GlobalResponse viewAllClaims(Short page) {
 		Page<Claims> claims = claimsRepository.findAll(PageRequest.of(page - 1, 10, Sort.by("claimid").descending()));
-
+        long count = claims.stream().count();
 		GlobalResponse globalResponse = new GlobalResponse();
 		List<ViewPoliciesResponse> listvPoliciesResponses = new ArrayList<ViewPoliciesResponse>();
 
@@ -96,16 +108,21 @@ public class ClaimService {
 			listvPoliciesResponses.add(viewPoliciesResponse);
 
 		});
-
-		globalResponse.setData(listvPoliciesResponses);
+        
+		globalPaginationResponse.setList(listvPoliciesResponses);
+		globalPaginationResponse.setCount(count);
+		
+		globalResponse.setData(globalPaginationResponse);
 		globalResponse.setMessage("All claims!!!");
 		globalResponse.setStatus(true);
 		return globalResponse;
 	}
 
-	public GlobalResponse getClaimById(Integer cid) {
+	public GlobalResponse getClaimById(Integer cid, Short page) {
 
-		List<Claims> claims = claimsRepository.findByCid(cid);
+		Page<Claims> claims = claimsRepository.findByCid(cid,
+				PageRequest.of(page - 1, 10, Sort.by("claimid").descending()));
+		long count = claims.stream().count();
 		GlobalResponse globalResponse = new GlobalResponse();
 		List<ClaimsStatusResponse> claimsStatusList = new ArrayList<ClaimsStatusResponse>();
 
@@ -120,7 +137,10 @@ public class ClaimService {
 
 			claimsStatusList.add(claimsStatusResponse);
 		});
-		globalResponse.setData(claimsStatusList);
+
+		globalPaginationResponse.setList(claimsStatusList);
+		globalPaginationResponse.setCount(count);
+		globalResponse.setData(globalPaginationResponse);
 		globalResponse.setMessage("My claims!!!");
 		globalResponse.setStatus(true);
 		return globalResponse;

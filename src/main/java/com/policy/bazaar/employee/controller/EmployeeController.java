@@ -18,7 +18,8 @@ import com.policy.bazaar.employee.request.EmployeeLoginRequest;
 import com.policy.bazaar.employee.request.EmployeeRequest;
 import com.policy.bazaar.employee.request.EmployeeUpdatePasswordRequest;
 import com.policy.bazaar.employee.request.EmployeeUpdateRequest;
-import com.policy.bazaar.employee.request.updateStatusRequest;
+import com.policy.bazaar.employee.request.UpdateEmpStatusRequest;
+import com.policy.bazaar.employee.request.UpdateStatusRequest;
 import com.policy.bazaar.employee.service.EmployeeService;
 import com.policy.bazaar.globalresponse.GlobalResponse;
 
@@ -103,20 +104,25 @@ public class EmployeeController {
 	}
 
 	@PutMapping("/updateStatus")
-	public GlobalResponse updateStatus(@RequestBody updateStatusRequest updateRequest) {
+	public GlobalResponse updateStatus(@RequestBody UpdateStatusRequest updateRequest) throws Exception {
 
 		return empService.updateStatus(updateRequest);
 	}
 
-	@GetMapping("/allpurchasedpolicies")
-	public GlobalResponse allPurchasedPolicies() {
+	@GetMapping("/allpurchasedpolicies/{page}")
+	public GlobalResponse allPurchasedPolicies(@PathVariable Short page) {
 
-		return empService.allPurchasedPolicies();
+		return empService.allPurchasedPolicies(page);
 	}
 	
 	@GetMapping("/getallcount")
 	public GlobalResponse getAllPoliciesCount() {
 		return empService.getAllCount();
+	}
+	
+	@PutMapping("/updateempstatus")
+	public GlobalResponse updateEmpStatus(@RequestBody UpdateEmpStatusRequest updateEmpStatus) {
+		return empService.updateEmpStatus(updateEmpStatus);
 	}
 
 }

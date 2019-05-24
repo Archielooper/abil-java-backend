@@ -1,7 +1,5 @@
 package com.policy.bazaar.employee.model;
 
-
-
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -9,8 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -26,7 +22,7 @@ public class Employees {
 
 	@NotNull
 	@Size(min = 2, max = 30, message = "{validation.fullname.size}")
-	//@Pattern(regexp = "[-A-Za-z]*", message = "{validation.fullname.pattern}")
+	// @Pattern(regexp = "[-A-Za-z]*", message = "{validation.fullname.pattern}")
 	private String fullname;
 
 	@NotNull(message = "{validation.email.notnull}")
@@ -38,12 +34,11 @@ public class Employees {
 	private String mobile;
 
 	@NotNull(message = "{validation.usertype.notnull}")
-	@Min(value = 2, message = "{validation.usertype.pattern}")
-	@Max(value = 3, message = "{validation.usertype.pattern}")
 	private Byte usertype;
 	private String password;
 	private Date createdon;
 	private Date lastupdatedon;
+	private Integer status;
 
 	public Integer getEmpid() {
 		return empid;
@@ -107,6 +102,14 @@ public class Employees {
 
 	public void setLastupdatedon(Date lastupdatedon) {
 		this.lastupdatedon = lastupdatedon;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 	@Override

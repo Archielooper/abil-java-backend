@@ -2,7 +2,6 @@ package com.policy.bazaar.communication;
 
 import java.util.Base64;
 import java.util.Properties;
-import java.util.UUID;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -20,8 +19,7 @@ import org.springframework.stereotype.Component;
 @Configuration
 @Component
 @PropertySource("classpath:auth.properties")
-public class SendEmail {
-
+public class SendEmailForStatus {
 	final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 
 	@Value("${user.username}")
@@ -30,7 +28,7 @@ public class SendEmail {
 	@Value("${password}")
 	String password = "{password}";
 
-	public void sendEmail(String to, UUID uuid) throws Exception {
+	public void sendEmail(String to, String name, String Status) throws Exception {
 
 		Base64.Decoder decoder = Base64.getDecoder();
 		String decodedpassword = new String(decoder.decode(password));
@@ -56,11 +54,10 @@ public class SendEmail {
 			MimeMessage message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(username));
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-			message.setSubject("Set your password!!!");
+			message.setSubject("Policy Update!!!");
 
 			message.setText(
-					"<!DOCTYPE html><html><head><meta charset=\"ISO-8859-1\"><title>Mail Template</title></head><body> <h2> Your account has been created!!!!! </h2> <p> Click on the following link to set your password:<a href='http://localhost:4200/create-password/"
-							+ uuid + "'> Click Here! </a> </p></body></html>",
+					"<!DOCTYPE html><html><head><meta charset=\"ISO-8859-1\"><title>Mail Template</title></head><body> <h2> Hi, "+ name+" your Policy is "+Status+" </h2> <p> All the best.</p></body></html>",
 					"UTF-8", "html");
 
 			Transport.send(message);

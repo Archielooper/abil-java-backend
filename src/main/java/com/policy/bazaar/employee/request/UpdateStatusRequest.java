@@ -1,6 +1,6 @@
 package com.policy.bazaar.employee.request;
 
-public class updateStatusRequest {
+public class UpdateStatusRequest {
 
 	private Integer purchasedid;
 	private Integer status;

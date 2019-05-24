@@ -5,13 +5,13 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import com.policy.bazaar.communication.SendEmail;
+import com.policy.bazaar.communication.SendEmailForChangePassword;
 
 
 public class SendMessage {
 
 	@Autowired
-	SendEmail sendEmail;
+	SendEmailForChangePassword sendEmail;
 	
 
 	// @Scheduled(initialDelay = 1000, fixedRate = 10000)
