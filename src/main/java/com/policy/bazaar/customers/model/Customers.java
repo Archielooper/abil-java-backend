@@ -43,6 +43,7 @@ public class Customers {
 	private Date lastupdatedon;
 	private Date createdon;
 	private String address;
+	private String imageurl;
 
 	public Integer getCid() {
 		return cid;
@@ -122,6 +123,14 @@ public class Customers {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public String getImageurl() {
+		return imageurl;
+	}
+
+	public void setImageurl(String imageurl) {
+		this.imageurl = imageurl;
 	}
 
 	@Override

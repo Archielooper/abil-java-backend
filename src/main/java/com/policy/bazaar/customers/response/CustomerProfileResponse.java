@@ -7,6 +7,7 @@ public class CustomerProfileResponse {
 	private String email;
 	private String mobile;
 	private String Address;
+	private String imageurl;
 
 	public String getFirstname() {
 		return firstname;
@@ -46,6 +47,14 @@ public class CustomerProfileResponse {
 
 	public void setAddress(String address) {
 		Address = address;
+	}
+
+	public String getImageurl() {
+		return imageurl;
+	}
+
+	public void setImageurl(String imageurl) {
+		this.imageurl = imageurl;
 	}
 
 }

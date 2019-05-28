@@ -1,8 +1,11 @@
 package com.policy.bazaar.employee.controller;
 
+import java.io.IOException;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.policy.bazaar.common.exception.PolicyBazaarServiceException;
 import com.policy.bazaar.employee.request.EmployeeCreateRequest;
@@ -123,6 +128,13 @@ public class EmployeeController {
 	@PutMapping("/updateempstatus")
 	public GlobalResponse updateEmpStatus(@RequestBody UpdateEmpStatusRequest updateEmpStatus) {
 		return empService.updateEmpStatus(updateEmpStatus);
+	}
+	
+	@PostMapping( value ="/upload/{empid}" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public GlobalResponse uploadImage(@RequestParam("image") MultipartFile file , @PathVariable Integer empid) throws IOException
+	{
+		return empService.uploadImage(file , empid);
+		
 	}
 
 }

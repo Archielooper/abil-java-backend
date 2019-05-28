@@ -1,8 +1,11 @@
 package com.policy.bazaar.customers.controller;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.policy.bazaar.customers.request.AddNewPolicyRequest;
 import com.policy.bazaar.customers.request.CustomerSignInRequest;
@@ -91,6 +96,13 @@ public class CustomerController {
 	@PutMapping("/updatecustomerprofile/{cid}")
 	public GlobalResponse updateProfile(@PathVariable Integer cid, @RequestBody UpdateCustomerProfileRequest updateProfileRequest) {
 		return customerService.updateCustomerProfile(cid,updateProfileRequest);
+	}
+	
+	@PostMapping( value ="/upload/{cid}" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public GlobalResponse uploadImage(@RequestParam("image") MultipartFile file , @PathVariable Integer cid) throws IOException
+	{
+		return customerService.uploadImage(file , cid);
+		
 	}
 
 }

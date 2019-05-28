@@ -1,5 +1,8 @@
 package com.policy.bazaar.employee.service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.policy.bazaar.common.exception.NotFoundException;
 import com.policy.bazaar.common.exception.PolicyBazaarServiceException;
@@ -79,6 +83,8 @@ public class EmployeeService {
 
 	@Autowired
 	GlobalPaginationResponse globalPaginationResponse;
+	
+	private static String UPLOADED_FOLDER = "/home/archit/Archit/Back End Projects/PolicyApp/src/main/webapp/images/images";
 
 	private final String status[] = { "PENDING", "APPROVED", "REJECTED" };
 
@@ -211,6 +217,7 @@ public class EmployeeService {
 			employeeResponse.setEmail(emp1.getEmail());
 			employeeResponse.setMobile(emp1.getMobile());
 			employeeResponse.setUserType(emp1.getUsertype());
+			employeeResponse.setImageurl(emp1.getImageurl());
 			globalResponse.setData(employeeResponse);
 			globalResponse.setStatus(true);
 			globalResponse.setMessage("Authorized!!!");
@@ -502,6 +509,30 @@ public class EmployeeService {
 		globalResponse.setMessage("Status Updated..");
 		globalResponse.setStatus(true);
 		return globalResponse;
+	}
+
+	public GlobalResponse uploadImage(MultipartFile file, Integer empid) throws IOException {
+		
+		GlobalResponse globalResponse = new GlobalResponse();
+
+		File convertFile = new File(UPLOADED_FOLDER + file.getOriginalFilename());
+		convertFile.createNewFile();
+		FileOutputStream fout = new FileOutputStream(convertFile);
+		fout.write(file.getBytes());
+		fout.close();
+		
+		Employees employee = empRepository.findById(empid).get();
+		
+		employee.setImageurl("images" +file.getOriginalFilename());
+		
+		empRepository.save(employee);
+		globalResponse.setData(null);
+		globalResponse.setMessage("Image Uploaded Successfully");
+		globalResponse.setStatus(true);
+
+		return globalResponse;
+
+		
 	}
 
 }

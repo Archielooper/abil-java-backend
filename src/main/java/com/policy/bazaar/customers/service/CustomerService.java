@@ -1,5 +1,8 @@
 package com.policy.bazaar.customers.service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.policy.bazaar.claims.model.Claims;
 import com.policy.bazaar.common.exception.PolicyBazaarServiceException;
@@ -58,6 +62,8 @@ public class CustomerService {
 
 	@Autowired
 	GlobalPaginationResponse globalPaginationResponse;
+
+	private static String UPLOADED_FOLDER = "/home/archit/Archit/Back End Projects/PolicyApp/src/main/webapp/images/images";
 
 	public GlobalResponse signup(CustomerSignUpRequest customerRequest) {
 
@@ -137,16 +143,17 @@ public class CustomerService {
 			globalResponse.setMessage("Customer with the id-" + cid + " not found!!!!");
 			globalResponse.setStatus(false);
 		} else {
-			
+
 			Customers custom = customer.get();
 			customerResponse.setFirstname(custom.getFirstname());
 			customerResponse.setLastname(custom.getLastname());
 			customerResponse.setMobile(custom.getMobile());
 			customerResponse.setEmail(custom.getEmail());
-			
-			if(custom.getAddress().equals(null)) {
+			customerResponse.setImageurl(custom.getImageurl());
+
+			if (custom.getAddress().equals(null)) {
 				customerResponse.setAddress("Please enter your complete address...");
-			}else {
+			} else {
 				customerResponse.setAddress(custom.getAddress());
 			}
 			globalResponse.setData(customerResponse);
@@ -275,7 +282,8 @@ public class CustomerService {
 
 		long approvedClaimscount = claims.stream().filter(claim -> claim.getStatus() == 1).count();
 		long approvedPoliciesCount = purchasedpolicies.stream()
-				.filter(purchasedpolicy -> purchasedpolicy.getStatus() == 1 || purchasedpolicy.getStatus() == 3).count();
+				.filter(purchasedpolicy -> purchasedpolicy.getStatus() == 1 || purchasedpolicy.getStatus() == 3)
+				.count();
 
 		GetAllCountResponse getClaimsCountResponse = new GetAllCountResponse();
 
@@ -327,15 +335,15 @@ public class CustomerService {
 	}
 
 	public GlobalResponse updateCustomerProfile(Integer cid, UpdateCustomerProfileRequest updateProfileRequest) {
-       
+
 		GlobalResponse globalResponse = new GlobalResponse();
 		Customers customer = customerRepository.findByCid(cid);
-		
-		if(customer == null) {
+
+		if (customer == null) {
 			globalResponse.setData(null);
 			globalResponse.setMessage("Not Found!!!!!");
 			globalResponse.setStatus(false);
-		}else {
+		} else {
 			customer.setFirstname(updateProfileRequest.getFirstname());
 			customer.setLastname(updateProfileRequest.getLastname());
 			customer.setMobile(updateProfileRequest.getMobile());
@@ -345,7 +353,28 @@ public class CustomerService {
 			globalResponse.setMessage("Profile Updated Successfully!!!!!!!");
 			globalResponse.setStatus(true);
 		}
-		
+
+		return globalResponse;
+	}
+
+	public GlobalResponse uploadImage(MultipartFile file, Integer cid) throws IOException {
+		GlobalResponse globalResponse = new GlobalResponse();
+
+		File convertFile = new File(UPLOADED_FOLDER + file.getOriginalFilename());
+		convertFile.createNewFile();
+		FileOutputStream fout = new FileOutputStream(convertFile);
+		fout.write(file.getBytes());
+		fout.close();
+
+		Customers customer = customerRepository.findById(cid).get();
+
+		customer.setImageurl("images" + file.getOriginalFilename());
+
+		customerRepository.save(customer);
+		globalResponse.setData(null);
+		globalResponse.setMessage("Image Uploaded Successfully");
+		globalResponse.setStatus(true);
+
 		return globalResponse;
 	}
 

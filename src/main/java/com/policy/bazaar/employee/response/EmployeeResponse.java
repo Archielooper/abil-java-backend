@@ -8,6 +8,7 @@ public class EmployeeResponse {
 	private Byte userType;
 	private Integer status;
 	private Integer empId;
+	private String imageurl;
 
 	public Integer getEmpId() {
 		return empId;
@@ -55,6 +56,14 @@ public class EmployeeResponse {
 
 	public void setUserType(Byte userType) {
 		this.userType = userType;
+	}
+
+	public String getImageurl() {
+		return imageurl;
+	}
+
+	public void setImageurl(String imageurl) {
+		this.imageurl = imageurl;
 	}
 
 }

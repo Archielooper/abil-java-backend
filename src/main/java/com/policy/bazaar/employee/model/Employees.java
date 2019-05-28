@@ -39,6 +39,7 @@ public class Employees {
 	private Date createdon;
 	private Date lastupdatedon;
 	private Integer status;
+	private String imageurl;
 
 	public Integer getEmpid() {
 		return empid;
@@ -110,6 +111,14 @@ public class Employees {
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+	public String getImageurl() {
+		return imageurl;
+	}
+
+	public void setImageurl(String imageurl) {
+		this.imageurl = imageurl;
 	}
 
 	@Override
