@@ -63,7 +63,7 @@ public class CustomerService {
 	@Autowired
 	GlobalPaginationResponse globalPaginationResponse;
 
-	private static String UPLOADED_FOLDER = "/home/archit/Archit/Back End Projects/PolicyApp/src/main/webapp/images/images";
+	private static String UPLOADED_FOLDER = "src/main/resources/static/images/";
 
 	public GlobalResponse signup(CustomerSignUpRequest customerRequest) {
 
@@ -368,7 +368,7 @@ public class CustomerService {
 
 		Customers customer = customerRepository.findById(cid).get();
 
-		customer.setImageurl("images" + file.getOriginalFilename());
+		customer.setImageurl(file.getOriginalFilename());
 
 		customerRepository.save(customer);
 		globalResponse.setData(null);
