@@ -25,7 +25,7 @@ public class PolicyService {
 
 	@Autowired
 	PoliciesRepository policyRepository;
-	
+
 	@Autowired
 	GlobalPaginationResponse globalPaginationResponse;
 
@@ -51,9 +51,10 @@ public class PolicyService {
 
 	public GlobalResponse getPolicies(Short page) {
 
-		Page<Policies> policies = policyRepository.findAll(PageRequest.of(page - 1, 5, Sort.by("createdon").descending()));
+		Page<Policies> policies = policyRepository
+				.findAll(PageRequest.of(page - 1, 5, Sort.by("createdon").descending()));
 		long count = policyRepository.count();
-		
+
 		List<GetPoliciesResponse> getPolicyList = new ArrayList<GetPoliciesResponse>();
 		GlobalResponse globalResponse = new GlobalResponse();
 		policies.stream().forEach((i) -> {
@@ -65,15 +66,14 @@ public class PolicyService {
 			getPoliciesResponse.setDescription(i.getDescription());
 			getPoliciesResponse.setTenure(i.getTenure());
 			getPolicyList.add(getPoliciesResponse);
-			
-			globalPaginationResponse.setList(getPolicyList);
-			globalPaginationResponse.setCount(count);
-
-			globalResponse.setData(globalPaginationResponse);
-			globalResponse.setStatus(true);
-			globalResponse.setMessage("Authorized!!!!");
 
 		});
+		globalPaginationResponse.setList(getPolicyList);
+		globalPaginationResponse.setCount(count);
+
+		globalResponse.setData(globalPaginationResponse);
+		globalResponse.setStatus(true);
+		globalResponse.setMessage("Authorized!!!!");
 
 		return globalResponse;
 	}

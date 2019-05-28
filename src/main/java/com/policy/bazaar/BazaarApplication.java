@@ -21,6 +21,10 @@ import com.policy.bazaar.security.EmployeeAuthorizationFilter;
 @SpringBootApplication
 @EnableScheduling
 public class BazaarApplication implements WebMvcConfigurer{
+	
+	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
+			"classpath:/META-INF/resources/", "classpath:/resources/",
+			"classpath:src/main/resources/static/images", "classpath:/public/" };
 
 	@Bean
 	public MessageSource messageSource() {
@@ -92,10 +96,14 @@ public class BazaarApplication implements WebMvcConfigurer{
 	
 	@Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-
-        // Register resource handler for images
-        registry.addResourceHandler("/images/**").addResourceLocations("/images/")
-                .setCacheControl(CacheControl.maxAge(2, TimeUnit.HOURS).cachePublic());
+		if (!registry.hasMappingForPattern("/webjars/**")) {
+			registry.addResourceHandler("/webjars/**").addResourceLocations(
+					"classpath:/META-INF/resources/webjars/");
+		}
+		if (!registry.hasMappingForPattern("/**")) {
+			registry.addResourceHandler("/**").addResourceLocations(
+					CLASSPATH_RESOURCE_LOCATIONS);
+		}
     }
 
 

@@ -84,7 +84,7 @@ public class EmployeeService {
 	@Autowired
 	GlobalPaginationResponse globalPaginationResponse;
 	
-	private static String UPLOADED_FOLDER = "/home/archit/Archit/Back End Projects/PolicyApp/src/main/webapp/images/images";
+	private static String UPLOADED_FOLDER = "src/main/resources/static/images/";
 
 	private final String status[] = { "PENDING", "APPROVED", "REJECTED" };
 
@@ -523,7 +523,7 @@ public class EmployeeService {
 		
 		Employees employee = empRepository.findById(empid).get();
 		
-		employee.setImageurl("images" +file.getOriginalFilename());
+		employee.setImageurl(file.getOriginalFilename());
 		
 		empRepository.save(employee);
 		globalResponse.setData(null);

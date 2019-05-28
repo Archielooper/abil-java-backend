@@ -21,4 +21,4 @@ spring:
   mvc:
       dispatch-options-request: true
 server:
-  port: 9090
+  port: 8081
