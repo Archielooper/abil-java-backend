@@ -20,8 +20,7 @@ import com.policy.bazaar.security.EmployeeAuthorizationFilter;
 public class BazaarApplication implements WebMvcConfigurer{
 	
 	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
-			"classpath:/META-INF/resources/", "classpath:/resources/",
-			"classpath:src/main/resources/static/images", "classpath:/public/" };
+			"classpath:/META-INF/resources/", "classpath:/resources/", "classpath:/public/images" };
 
 	@Bean
 	public MessageSource messageSource() {
