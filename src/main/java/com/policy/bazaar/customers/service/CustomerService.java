@@ -81,6 +81,7 @@ public class CustomerService {
 				customers.setPassword(encryptString);
 				customers.setLastupdatedon(new Date());
 				customers.setCreatedon(new Date());
+				customers.setAddress(" ");;
 				customers.setStatus(1);
 				customerRepository.save(customers);
 
