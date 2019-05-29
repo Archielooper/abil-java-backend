@@ -63,7 +63,7 @@ public class CustomerService {
 	@Autowired
 	GlobalPaginationResponse globalPaginationResponse;
 
-	private static String UPLOADED_FOLDER = "/public/images/";
+	private static String UPLOADED_FOLDER = "src/main/resources/static/images/";
 
 	public GlobalResponse signup(CustomerSignUpRequest customerRequest) {
 
