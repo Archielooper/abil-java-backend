@@ -2,6 +2,7 @@ package com.policy.bazaar.customers.controller;
 
 import java.io.IOException;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class CustomerController {
 
 	@Autowired
 	CustomerService customerService;
+
+	@Autowired
+	ServletContext context;
 
 	@PostMapping("/signup")
 	public GlobalResponse signup(@RequestBody CustomerSignUpRequest customerrequest) {
@@ -64,15 +68,15 @@ public class CustomerController {
 	}
 
 	@GetMapping("/getpurchasedpolicies/{cid}/{page}")
-	public GlobalResponse getPurchasedPolicies(@PathVariable Integer cid,@PathVariable Short page) {
-		return customerService.getPurchasedPolicies(cid,page);
+	public GlobalResponse getPurchasedPolicies(@PathVariable Integer cid, @PathVariable Short page) {
+		return customerService.getPurchasedPolicies(cid, page);
 
 	}
 
 	@GetMapping("/getnewpolicies/{cid}/{page}")
-	public GlobalResponse getNewPolicies(@PathVariable Integer cid , @PathVariable Short page) {
+	public GlobalResponse getNewPolicies(@PathVariable Integer cid, @PathVariable Short page) {
 
-		return customerService.getNewPolicies(cid,page);
+		return customerService.getNewPolicies(cid, page);
 
 	}
 
@@ -86,23 +90,30 @@ public class CustomerController {
 	public GlobalResponse getClaimsCount(@PathVariable Integer cid) {
 		return customerService.getClaimsCount(cid);
 	}
-	
+
 	@PutMapping("/updatepassword/{cid}")
-	public GlobalResponse updatePassword(@PathVariable Integer cid ,@RequestBody UpdateCustomerPasswordRequest updatePasswordRequest) {
-		return customerService.updateCustomerPassword(cid,updatePasswordRequest);
-		
+	public GlobalResponse updatePassword(@PathVariable Integer cid,
+			@RequestBody UpdateCustomerPasswordRequest updatePasswordRequest) {
+		return customerService.updateCustomerPassword(cid, updatePasswordRequest);
+
 	}
-	
+
 	@PutMapping("/updatecustomerprofile/{cid}")
-	public GlobalResponse updateProfile(@PathVariable Integer cid, @RequestBody UpdateCustomerProfileRequest updateProfileRequest) {
-		return customerService.updateCustomerProfile(cid,updateProfileRequest);
+	public GlobalResponse updateProfile(@PathVariable Integer cid,
+			@RequestBody UpdateCustomerProfileRequest updateProfileRequest) {
+		return customerService.updateCustomerProfile(cid, updateProfileRequest);
 	}
-	
-	@PostMapping( value ="/upload/{cid}" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public GlobalResponse uploadImage(@RequestParam("image") MultipartFile file , @PathVariable Integer cid) throws IOException
-	{
-		return customerService.uploadImage(file , cid);
-		
+
+	@PostMapping(value = "/upload/{cid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public GlobalResponse uploadImage(@RequestParam("image") MultipartFile file, @PathVariable Integer cid)
+			throws IOException {
+
+		String applicationRootPath = context.getRealPath("/");
+
+		GlobalResponse uploadImage = customerService.uploadImage(file, cid, applicationRootPath);
+
+		return uploadImage;
+
 	}
 
 }

@@ -63,8 +63,6 @@ public class CustomerService {
 	@Autowired
 	GlobalPaginationResponse globalPaginationResponse;
 
-	private static String UPLOADED_FOLDER = "WEB-INF/static/images/";
-
 	public GlobalResponse signup(CustomerSignUpRequest customerRequest) {
 
 		Customers customers = new Customers();
@@ -358,10 +356,20 @@ public class CustomerService {
 		return globalResponse;
 	}
 
-	public GlobalResponse uploadImage(MultipartFile file, Integer cid) throws IOException {
+	public GlobalResponse uploadImage(MultipartFile file, Integer cid , String directoryName) throws IOException {
+		
 		GlobalResponse globalResponse = new GlobalResponse();
+		String imageFolder = String.valueOf(directoryName) + File.separator + "images";
+		File directory = new File(imageFolder);
 
-		File convertFile = new File(UPLOADED_FOLDER + file.getOriginalFilename());
+		if (!directory.exists()) {
+
+			directory.mkdir();
+
+		}
+		String completeFileName = imageFolder + File.separator + file.getOriginalFilename();
+		System.out.println("completeFileName > " + completeFileName);
+		File convertFile = new File(completeFileName);
 		convertFile.createNewFile();
 		FileOutputStream fout = new FileOutputStream(convertFile);
 		fout.write(file.getBytes());
