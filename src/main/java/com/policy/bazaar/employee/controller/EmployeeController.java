@@ -2,6 +2,7 @@ package com.policy.bazaar.employee.controller;
 
 import java.io.IOException;
 
+import javax.servlet.ServletContext;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class EmployeeController {
 
 	@Autowired
 	EmployeeService empService;
+	
+	@Autowired
+	ServletContext context;
 
 	@PostMapping("/createEmployee")
 	public GlobalResponse createEmployee(@Valid @RequestBody EmployeeCreateRequest empDetails) {
@@ -133,7 +137,12 @@ public class EmployeeController {
 	@PostMapping( value ="/upload/{empid}" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public GlobalResponse uploadImage(@RequestParam("image") MultipartFile file , @PathVariable Integer empid) throws IOException
 	{
-		return empService.uploadImage(file , empid);
+		String applicationRootPath = context.getRealPath("/");
+		
+		GlobalResponse uploadImage = empService.uploadImage(file , empid,applicationRootPath);
+		
+		
+		return uploadImage;
 		
 	}
 

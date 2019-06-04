@@ -83,8 +83,6 @@ public class EmployeeService {
 
 	@Autowired
 	GlobalPaginationResponse globalPaginationResponse;
-	
-	private static String UPLOADED_FOLDER = "src/main/resources/static/images/";
 
 	private final String status[] = { "PENDING", "APPROVED", "REJECTED" };
 
@@ -137,31 +135,30 @@ public class EmployeeService {
 			response.setStatus(false);
 			response.setMessage("Email or Password not valid");
 		} else {
-                 
-			if(findByEmail.getStatus() != 1) {
+
+			if (findByEmail.getStatus() != 1) {
 				response.setData(null);
 				response.setStatus(false);
 				response.setMessage("Not an Active user!!!!!!!");
-				
-			} else {
-			String password = findByEmail.getPassword();
-			String userPassword = AES256Encryption.encrypt(empLogin.getPassword(), AES256Encryption.secretKey);
-			Byte empUserType = findByEmail.getUsertype();
 
-			Response response1 = new Response();
-			response1.setAuth(true);
-			response1.setUserType(empUserType);
-			
-			if (password.equals(userPassword)) {
-				response.setData(JWTEmployeeToken.createJWT(20000000L, findByEmail));
-				response.setStatus(true);
-				response.setMessage("Authenticated!!!!!");
-			}
-			else {
-				response.setData(null);
-				response.setStatus(false);
-				response.setMessage("Email or Password not valid");
-			}
+			} else {
+				String password = findByEmail.getPassword();
+				String userPassword = AES256Encryption.encrypt(empLogin.getPassword(), AES256Encryption.secretKey);
+				Byte empUserType = findByEmail.getUsertype();
+
+				Response response1 = new Response();
+				response1.setAuth(true);
+				response1.setUserType(empUserType);
+
+				if (password.equals(userPassword)) {
+					response.setData(JWTEmployeeToken.createJWT(20000000L, findByEmail));
+					response.setStatus(true);
+					response.setMessage("Authenticated!!!!!");
+				} else {
+					response.setData(null);
+					response.setStatus(false);
+					response.setMessage("Email or Password not valid");
+				}
 			}
 		}
 		return response;
@@ -244,14 +241,13 @@ public class EmployeeService {
 			empResponse.setStatus(i.getStatus());
 			empResponse.setEmpId(i.getEmpid());
 			employeeResponse.add(empResponse);
-			
+
 		});
 		globalPaginationResponse.setList(employeeResponse);
 		globalPaginationResponse.setCount(count);
 		globalResponse.setData(globalPaginationResponse);
 		globalResponse.setStatus(true);
 		globalResponse.setMessage("Authorized!!!!");
-
 
 		return globalResponse;
 	}
@@ -357,20 +353,19 @@ public class EmployeeService {
 
 		Employees employee = empRepository.findById(empId).get();
 		GlobalResponse globalResponse = new GlobalResponse();
-		
 
 		if (employee == null && employee.getStatus() != 0) {
-			
+
 			globalResponse.setData(null);
 			globalResponse.setStatus(false);
 			globalResponse.setMessage("Not Allowed!!!!!");
 		} else {
-            
+
 			empRepository.deleteById(empId);
 			globalResponse.setData(null);
 			globalResponse.setStatus(true);
 			globalResponse.setMessage("Deleted Successfully!!!!!");
-			
+
 		}
 
 		return globalResponse;
@@ -436,7 +431,8 @@ public class EmployeeService {
 
 		GlobalResponse globalResponse = new GlobalResponse();
 
-		Page<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository.findAll(PageRequest.of(page - 1, 10, Sort.by("createdon").descending()));
+		Page<Purchasedpolicies> purchasedpolicies = purchasedPoliciesRepository
+				.findAll(PageRequest.of(page - 1, 10, Sort.by("createdon").descending()));
 		long count = purchasedPoliciesRepository.count();
 
 		List<PurchasedPoliciesResponse> purchasedPoliciesResponsesList = new ArrayList<PurchasedPoliciesResponse>();
@@ -496,35 +492,46 @@ public class EmployeeService {
 	}
 
 	public GlobalResponse updateEmpStatus(UpdateEmpStatusRequest updateEmpStatus) {
-		
+
 		GlobalResponse globalResponse = new GlobalResponse();
-		
+
 		Employees employee = empRepository.findById(updateEmpStatus.getEmpId()).get();
-		
+
 		employee.setStatus(updateEmpStatus.getStatus());
 		employee.setLastupdatedon(new Date());
 		empRepository.save(employee);
-		
+
 		globalResponse.setData(null);
 		globalResponse.setMessage("Status Updated..");
 		globalResponse.setStatus(true);
 		return globalResponse;
 	}
 
-	public GlobalResponse uploadImage(MultipartFile file, Integer empid) throws IOException {
-		
+	public GlobalResponse uploadImage(MultipartFile file, Integer empid, String directoryName) throws IOException {
+
 		GlobalResponse globalResponse = new GlobalResponse();
 
-		File convertFile = new File(UPLOADED_FOLDER + file.getOriginalFilename());
+		String imageFolder = String.valueOf(directoryName) + File.separator + "images";
+		File directory = new File(imageFolder);
+
+		if (!directory.exists()) {
+
+			directory.mkdir();
+
+		}
+
+		String completeFileName = imageFolder + File.separator + file.getOriginalFilename();
+		System.out.println("completeFileName > " + completeFileName);
+		File convertFile = new File(completeFileName);
 		convertFile.createNewFile();
 		FileOutputStream fout = new FileOutputStream(convertFile);
 		fout.write(file.getBytes());
 		fout.close();
-		
+
 		Employees employee = empRepository.findById(empid).get();
-		
+
 		employee.setImageurl(file.getOriginalFilename());
-		
+
 		empRepository.save(employee);
 		globalResponse.setData(null);
 		globalResponse.setMessage("Image Uploaded Successfully");
@@ -532,7 +539,6 @@ public class EmployeeService {
 
 		return globalResponse;
 
-		
 	}
 
 }
